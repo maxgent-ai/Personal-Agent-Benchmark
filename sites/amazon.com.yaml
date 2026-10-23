@@ -112,8 +112,12 @@ endpoints:
   - name: cross_border_interstitial
     match: "POST /cross_border_interstitial_sp/render"
     body_keep: [url, pageType]
+  # page-type is filled in by page script and reads "undefined" when a component loads before
+  # the page has set it, so the same request is recorded with "undefined" and replayed with
+  # "Detail"; the component path and body decide the content.
   - name: ajax_components
     match: "POST /acp/**"
+    drop_params: [page-type]
     fuzzy: true
   - name: video_player
     match: "POST /vap/**"

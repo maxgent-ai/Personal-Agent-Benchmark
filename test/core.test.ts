@@ -40,6 +40,22 @@ test('normalization drops volatile params, applies key templates and keeps chose
   assert.equal(normalizeRequest({ method: 'GET', url: 'https://img.shop.test/a.png?_=5' }, rules).kind, 'static');
 });
 
+test('amazon page components match whether page script filled in page-type or not', () => {
+  const rules = RuleSet.load([path.join(REPO_ROOT, 'sites')]);
+  const widget = (pageType: string) =>
+    normalizeRequest(
+      {
+        method: 'POST',
+        url: `https://www.amazon.com/acp/apple-brand-showcase/apple-brand-showcase-5aef1594-1792731058544/getAjaxContentHTML?page-type=${pageType}&stamp=1792746171596`,
+        contentType: 'application/json',
+        body: Buffer.from('{"asin":"B0D1WXVQTN"}'),
+      },
+      rules,
+    ).key;
+  assert.equal(widget('undefined'), widget('Detail'));
+  assert.notEqual(widget('Detail'), normalizeRequest({ method: 'POST', url: 'https://www.amazon.com/acp/apple-brand-showcase/apple-brand-showcase-5aef1594-1792731058544/getAjaxContentHTML?page-type=Detail', contentType: 'application/json', body: Buffer.from('{"asin":"B0OTHER000"}') }, rules).key, 'the body still selects the content');
+});
+
 test('pricing: discounts, free-shipping threshold and tax rounding in cents', () => {
   const rules = {
     items: { A: { price: 19.99 }, B: { price: 5 } },
