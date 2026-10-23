@@ -57,7 +57,10 @@ test('audit passes a clean bundle and reports credentials, live cookies and the 
   const [ex] = exchanges([{ url: 'https://shop.test/', body: 'x' }]);
   ex.reqHeaders.push(['Cookie', 'session=abc']);
   ex.respHeaders = [['Set-Cookie', 'session=live; Path=/']];
-  await writeBundle(new Bundle(dirty), [ex], { meta: { scenario_id: 'dirty', recorder: 'someone' }, rules });
+  await writeBundle(new Bundle(dirty), [ex], { meta: { task_id: 'dirty' }, rules });
+  // what older recorder versions wrote into the manifest
+  const manifestPath = new Bundle(dirty).manifestPath;
+  fs.writeFileSync(manifestPath, JSON.stringify({ ...JSON.parse(fs.readFileSync(manifestPath, 'utf8')), recorder: 'someone' }));
   const checks = (await auditBundle(new Bundle(dirty), rules)).map((f) => f.check).sort();
   assert.deepEqual(checks, ['manifest', 'request-credentials', 'response-cookies']);
 });

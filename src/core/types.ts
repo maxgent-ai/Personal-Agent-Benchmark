@@ -82,32 +82,20 @@ export interface SiteRules {
   xhr_not_found?: { content_type: string; body: string };
 }
 
+/** manifest.json: only what replay and import read. */
 export interface Manifest {
-  scenario_id: string;
   /** Benchmark task this recording belongs to (tasks/<task_id>/). */
-  task_id?: string;
-  created_at: string;
+  task_id: string;
+  /** Page clocks start here during replay. */
   captured_from: string;
   captured_to: string;
-  region?: { country?: string; zip?: string };
-  egress?: string;
-  accounts?: string[];
-  browser?: string;
-  recorder?: string;
-  timezone?: string;
-  locale?: string;
-  sources: string[];
-  sites: Record<string, { requests: number }>;
+  /** Each site's own 404 page, answered for documents replay cannot find. */
   not_found: Record<string, string>;
-  stats: {
-    exchanges: number;
-    responses_stored: number;
-    revisits: number;
-    bytes_payload: number;
-    skipped: number;
-    excluded: number;
-  };
+  /** Replay opens this page when nothing else is given. */
   start_url?: string;
+  /** Replay browsers use the recording's language and time zone. */
+  locale?: string;
+  timezone?: string;
 }
 
 export interface StoredResponse {

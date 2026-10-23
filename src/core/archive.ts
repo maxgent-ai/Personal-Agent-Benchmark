@@ -13,14 +13,12 @@ import * as tar from 'tar';
 export const PART_BYTES = 45 * 1024 * 1024;
 
 /** Files of a bundle that can be replayed and published; everything else stays with the recorder. */
-export const PUBLIC_BUNDLE_FILES = [
-  'manifest.json',
-  'datapackage.json',
-  'archive/data.warc',
-  'indexes/entries.jsonl',
-  'indexes/index.cdxj',
-  'pages/pages.jsonl',
-];
+export const PUBLIC_BUNDLE_FILES = ['manifest.json', 'archive/data.warc', 'indexes/entries.jsonl', 'pages/pages.jsonl'];
+
+/** Written by earlier versions and never read by replay; still accepted when unpacking old archives. */
+const LEGACY_BUNDLE_FILES = ['datapackage.json', 'indexes/index.cdxj'];
+
+export const isBundleFile = (p: string) => PUBLIC_BUNDLE_FILES.includes(p) || LEGACY_BUNDLE_FILES.includes(p);
 
 // a fixed timestamp keeps archives of the same files byte-identical
 const ARCHIVE_MTIME = new Date('2000-01-01T00:00:00Z');

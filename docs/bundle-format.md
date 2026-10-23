@@ -1,18 +1,46 @@
 # Bundle format
 
-A bundle is one recording. On disk it is a directory laid out like a WACZ file (`archive/`,
-`indexes/`, `pages/`, `datapackage.json`). In this repository it travels as
-`tasks/<id>/bundle.tar.gz`, which `pab` unpacks into `.cache/bundles/<id>-<hash>/` on first use.
+A bundle is one recording of a task (or several merged into one). It holds only what replay
+reads. In this repository it travels as `tasks/<id>/bundle.tar.gz`, which `pab` unpacks into
+`.cache/bundles/<id>-<hash>/` on first use.
 
 ```text
-manifest.json            recording window, region, browser, sites and their request counts,
-                         each site's own 404 page, statistics
+manifest.json            the few facts replay needs (below)
 archive/data.warc        every HTTP exchange (WARC 1.1, uncompressed records)
 indexes/entries.jsonl    replay index: one line per exchange, with the request body
-indexes/index.cdxj       standard CDXJ index (SURT, timestamp, offset)
 pages/pages.jsonl        top-level pages visited while recording
-datapackage.json         file list with sha256 hashes
 ```
+
+Web-archive tools such as ReplayWeb.page read WACZ files, which also carry a CDXJ index and a
+`datapackage.json`. Replay does not use them, so bundles do not store them; the recording tool
+builds them when it exports a WACZ. Bundles written before this change still contain both files
+and unpack as before.
+
+## manifest.json
+
+```json
+{
+  "task_id": "amazon-airpods",
+  "captured_from": "2026-10-22T10:40:57.458Z",
+  "captured_to": "2026-10-22T12:50:41.949Z",
+  "not_found": { "amazon": "https://www.amazon.com/rr-not-found-mgxy1k2a" },
+  "start_url": "https://www.amazon.com/",
+  "locale": "en-US",
+  "timezone": "America/New_York"
+}
+```
+
+| Field | Used for |
+|---|---|
+| `task_id` | which `tasks/<id>/` the recording belongs to |
+| `captured_from` | page clocks start here during replay |
+| `captured_to` | with `captured_from`, tells merged recordings apart |
+| `not_found` | each site's own 404 page, answered for documents replay cannot find |
+| `start_url` | the page replay opens when nothing else is given |
+| `locale`, `timezone` | the replay browser's language and time zone |
+
+Nothing else is recorded: not who recorded it, where from, with which browser, or request
+counts. `pab audit` fails a manifest with any other field.
 
 Rules and compute rules are not part of the published bundle; they live next to it in the task
 directory, so they can be reviewed and changed without touching the recording.
@@ -23,7 +51,8 @@ directory, so they can be reviewed and changed without touching the recording.
 the same files always give the same bytes. WARC records are stored uncompressed inside it: one
 gzip stream over the whole archive compresses far better than per-record gzip (the Amazon task:
 33 MB instead of 39 MB). Archives larger than 45 MB are split into `bundle.tar.gz.000`, `.001`,
-... and read back in order. Extraction accepts only the files listed above, and only regular files.
+... and read back in order. Extraction accepts only the files listed above (plus the two older
+files), and only regular files.
 
 ## WARC records
 

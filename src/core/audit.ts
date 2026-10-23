@@ -1,6 +1,7 @@
 import * as fs from 'node:fs';
 import type { Bundle } from './bundle';
 import type { RuleSet } from './rules';
+import type { Manifest } from './types';
 import { readExchanges } from './warc';
 
 export interface AuditFinding {
@@ -8,11 +9,13 @@ export interface AuditFinding {
   detail: string;
 }
 
+const MANIFEST_KEYS: (keyof Manifest)[] = ['task_id', 'captured_from', 'captured_to', 'not_found', 'start_url', 'locale', 'timezone'];
 const CREDENTIAL_REQUEST_HEADERS = ['cookie', 'authorization', 'proxy-authorization', 'x-amz-access-token'];
 
 /**
  * Checks that a bundle is safe to publish: no credentials in stored requests, no live cookie
- * values in stored responses, no pages the rules exclude (bot checks), and no recorder name.
+ * values in stored responses, no pages the rules exclude (bot checks), and nothing in the manifest
+ * beyond what replay reads (such as who recorded it).
  * Returns one finding per problem; an empty list means the bundle passed.
  */
 export async function auditBundle(bundle: Bundle, rules: RuleSet): Promise<AuditFinding[]> {
@@ -22,7 +25,8 @@ export async function auditBundle(bundle: Bundle, rules: RuleSet): Promise<Audit
   }
   if (findings.length) return findings;
 
-  if (bundle.manifest().recorder) findings.push({ check: 'manifest', detail: 'manifest.json names the person who recorded it' });
+  const extra = Object.keys(bundle.manifest()).filter((k) => !MANIFEST_KEYS.includes(k as keyof Manifest));
+  if (extra.length) findings.push({ check: 'manifest', detail: `manifest.json records fields replay does not use: ${extra.join(', ')}` });
 
   const add = (check: string, detail: string) => {
     if (findings.filter((f) => f.check === check).length < 20) findings.push({ check, detail });

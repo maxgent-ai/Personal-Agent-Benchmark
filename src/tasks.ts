@@ -1,14 +1,14 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import YAML from 'yaml';
-import { archiveParts, extractArchive, hashParts, PUBLIC_BUNDLE_FILES } from './core/archive';
+import { archiveParts, extractArchive, hashParts, isBundleFile } from './core/archive';
 import { PACKAGE_ROOT } from './paths';
 
 /**
  * tasks/<id>/ in this repository:
  *   task.yaml        the task card (what the agent is asked, where it starts)
  *   bundle.tar.gz    the recording (or bundle.tar.gz.000, .001, ... when split)
- *   bundle.json      summary of the recording, generated with it, for review in diffs
+ *   bundle.json      the recordings merged into it (time ranges), written on import
  *   rules/           site rules for this task: <site>.auto.yaml inferred from the recording,
  *                    <site>.yaml written by people (wins over auto and over sites/)
  *   compute.yaml     cart and checkout computation, when the task needs one
@@ -70,6 +70,7 @@ export class Task {
   get id(): string { return path.basename(this.dir); }
   get cardPath(): string { return path.join(this.dir, 'task.yaml'); }
   get archivePath(): string { return path.join(this.dir, 'bundle.tar.gz'); }
+  /** bundle.json: the recordings merged into bundle.tar.gz, written on import. */
   get summaryPath(): string { return path.join(this.dir, 'bundle.json'); }
   get rulesDir(): string { return path.join(this.dir, 'rules'); }
   get computePath(): string { return path.join(this.dir, 'compute.yaml'); }
@@ -94,7 +95,7 @@ export class Task {
     const tmp = `${dest}.tmp-${process.pid}`;
     fs.rmSync(tmp, { recursive: true, force: true });
     try {
-      await extractArchive(parts, tmp, (p) => PUBLIC_BUNDLE_FILES.includes(p));
+      await extractArchive(parts, tmp, isBundleFile);
       fs.rmSync(dest, { recursive: true, force: true });
       fs.renameSync(tmp, dest);
     } catch (err) {

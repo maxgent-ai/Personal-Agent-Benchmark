@@ -6,7 +6,7 @@ One directory per task under `tasks/`:
 tasks/<id>/
   task.yaml          the task card
   bundle.tar.gz      the recording (bundle.tar.gz.000, .001, ... when larger than 45 MB)
-  bundle.json        summary of the recording, generated with it
+  bundle.json        the recordings merged into bundle.tar.gz (time ranges), written on import
   rules/             site rules for this task
     <site>.auto.yaml   inferred from the recording; regenerated on every import, do not edit
     <site>.yaml        written by people; corrections and additions
@@ -54,13 +54,16 @@ The steps are:
    person, never by a script; orders are never placed. The tool packs the recording, removes
    cookies, credentials and listed personal data, infers site rules, and replays every recorded
    page once to measure hit rates.
-3. A maintainer imports the recording. The import refuses recordings that fail `pab audit` or the
-   personal-data scan, writes `bundle.tar.gz`, `bundle.json` and `rules/*.auto.yaml`, and leaves
-   hand-written files alone.
+3. A maintainer imports the recording. The import refuses recordings that fail `pab audit`,
+   writes `bundle.tar.gz`, `bundle.json` and `rules/*.auto.yaml`, and leaves hand-written files
+   alone. Tasks are recorded signed out, so page text is not scanned for personal data.
 4. The maintainer replays the task (`pab replay <id>`), adds `compute.yaml` if the task reaches a
    cart or checkout ([compute.md](compute.md)), fixes misses with rules, and opens a pull request.
 
-Re-recording a task replaces `bundle.tar.gz` and the `*.auto.yaml` files. Prices and pages change
-over time, so `compute.yaml` must be checked again (`pab compute-check <id>`).
+Recording a task again adds to it: the new recording is merged into `bundle.tar.gz`, requests
+recorded both times keep answering with the earlier copy, and the `*.auto.yaml` files are
+inferred again from both. The import can instead prefer the new copies or replace the recording.
+Prices and pages change over time, so the import re-checks `compute.yaml` samples
+(`pab compute-check <id>`).
 
 To propose a task, open an issue with the instruction, the start URL and the sites involved.

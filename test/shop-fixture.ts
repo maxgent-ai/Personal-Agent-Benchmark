@@ -101,7 +101,7 @@ export async function buildShopBundle(): Promise<string> {
   fs.copyFileSync(path.join(REPO_ROOT, 'sites', '_default.yaml'), path.join(dir, 'rules', '_default.yaml'));
   writeFile(path.join(dir, 'compute', 'compute.yaml'), COMPUTE);
   const result = await writeBundle(new Bundle(dir), exchanges(SHOP_EXCHANGES), {
-    meta: { scenario_id: 'shop', start_url: 'https://shop.test/' },
+    meta: { task_id: 'shop', start_url: 'https://shop.test/' },
     rules: RuleSet.load([path.join(dir, 'rules')]),
     pages: [
       { id: 'p1', url: 'https://shop.test/', ts: '2026-11-05T10:00:00Z' },

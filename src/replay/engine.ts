@@ -191,7 +191,7 @@ export class ReplayEngine {
     let body: unknown;
     switch (url.pathname) {
       case '/health':
-        body = { ok: true, scenario: this.manifest.scenario_id, entries: this.store.all.length, compute: !!this.compute, captured_from: this.manifest.captured_from };
+        body = { ok: true, task: this.manifest.task_id, entries: this.store.all.length, compute: !!this.compute, captured_from: this.manifest.captured_from };
         break;
       case '/stats':
         body = this.getStats();

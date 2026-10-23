@@ -100,8 +100,8 @@ test('writeBundle stores a deduplicated, uncompressed WARC with indexes', async 
   assert.equal(path.basename(bundle.archivePath), 'data.warc');
   const manifest = bundle.manifest();
   assert.equal(manifest.not_found.shop, 'https://shop.test/rr-not-found-abc');
-  assert.equal(manifest.sites.shop.requests, 11);
-  assert.ok(fs.readFileSync(bundle.cdxjPath, 'utf8').includes('test,shop)/'));
+  assert.deepEqual(Object.keys(manifest).sort(), ['captured_from', 'captured_to', 'not_found', 'start_url', 'task_id'], 'only what replay reads');
+  assert.ok(!fs.existsSync(path.join(dir, 'datapackage.json')) && !fs.existsSync(path.join(dir, 'indexes', 'index.cdxj')));
   const entries = bundle.entries();
   const home = entries.find((e) => e.url === 'https://shop.test/')!;
   const resp = await readResponseAt(bundle.archivePath, { offset: home.respOffset, length: home.respLength });
