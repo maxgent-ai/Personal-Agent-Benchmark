@@ -1,0 +1,124 @@
+# Amazon (US). Endpoint names are referenced by compute.yaml in a bundle.
+site: amazon
+hosts:
+  - "amazon.com"
+  - "*.amazon.com"
+  - "*.media-amazon.com"
+  - "*.ssl-images-amazon.com"
+  - "*.amazon-adsystem.com"
+drop_params:
+  - ref
+  - ref_
+  - qid
+  - sr
+  - crid
+  - sprefix
+  - pd_rd_*
+  - pf_rd_*
+  - content-id
+  - _encoding
+  - dib
+  - dib_tag
+  - hv*
+  - tag
+  - linkCode
+  - sp_csd
+  - spIA
+  - spLa
+  - sbo
+  - cv_ct_cx
+  - __mk_*
+  - rnid
+  - smid
+  - th
+  - psc
+  - showmri
+  - rshVal
+  - stamp
+  - request-id
+exclude:
+  - "www.amazon.com/checkpoint/**"
+  - "www.amazon.com/errors/validateCaptcha*"
+block:
+  - "*.amazon-adsystem.com"
+  - "fls-na.amazon.com"
+  - "unagi.amazon.com"
+  - "unagi-na.amazon.com"
+  - "www.amazon.com/1/batch/**"
+  - "www.amazon.com/uedata*"
+  - "www.amazon.com/rd/uedata*"
+  - "www.amazon.com/empty.gif*"
+  - "*.amazon.com/csm/**"
+  - "www.amazon.com/af/feedback-link*"
+  - "aax-*.amazon.com"
+  - "sponsored-ads.amazon.com"
+  - "www.amazon.com/rd/uedata*"
+endpoints:
+  # A product page is determined by its ASIN; title slugs, ref and tracking parameters vary.
+  - name: product
+    match: "GET /*/dp/{asin}/**"
+    key: "/dp/{asin}"
+    keep_params: []
+  - name: product_dp
+    match: "GET /dp/{asin}/**"
+    key: "/dp/{asin}"
+    keep_params: []
+  - name: product_gp
+    match: "GET /gp/product/{asin}/**"
+    key: "/dp/{asin}"
+    keep_params: []
+  - name: search
+    match: "GET /s"
+    host: "www.amazon.com"
+    keep_params: [k, i, page, rh, s]
+    kind: search
+    text_param: k
+  - name: search_legacy               # the header search form posts to /s/ref=...?field-keywords=
+    match: "GET /s/**"
+    host: "www.amazon.com"
+    key: "/s"
+    keep_params: [field-keywords, page]
+    kind: search
+    text_param: field-keywords
+  - name: suggestions
+    match: "GET /api/2017/suggestions"
+    host: "completion.amazon.com"
+    keep_params: [prefix, mid, alias]
+    kind: search
+    text_param: prefix
+    similarity: 0.3
+  - name: suggestions_www
+    match: "GET /suggestions"
+    host: "www.amazon.com"
+    keep_params: [prefix, alias]
+    kind: search
+    text_param: prefix
+    similarity: 0.3
+  # Cart: add and quantity changes update the replay's cart state; the cart page is computed
+  # (compute/compute.yaml in the bundle).
+  - name: add_to_cart
+    match: "POST /cart/add-to-cart/**"
+    kind: stateful
+    body_keep: [ASIN, quantity]
+  - name: cart_update_quantity
+    match: "POST /cart/ref=ox_sc_update_quantity*"
+    kind: stateful
+    body_keep: [asin, actionType]
+  - name: cart_view
+    match: "GET /gp/cart/view.html"
+    kind: computed
+  # Page components fetched by JS. Bodies carry the session id from cookies, which the
+  # bundle stores redacted, so match on the fields that select the content.
+  - name: cross_border_interstitial
+    match: "POST /cross_border_interstitial_sp/render"
+    body_keep: [url, pageType]
+  - name: ajax_components
+    match: "POST /acp/**"
+    fuzzy: true
+  - name: video_player
+    match: "POST /vap/**"
+    fuzzy: true
+  - name: search_pagination
+    match: "POST /s/query"
+    keep_params: [k, page]
+    fuzzy: true

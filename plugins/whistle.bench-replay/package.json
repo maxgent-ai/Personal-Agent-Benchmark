@@ -1,0 +1,7 @@
+{
+  "name": "whistle.bench-replay",
+  "version": "0.1.0",
+  "description": "Replays a Personal Agent Benchmark recording; never forwards requests to the network",
+  "main": "index.js",
+  "whistleConfig": {}
+}

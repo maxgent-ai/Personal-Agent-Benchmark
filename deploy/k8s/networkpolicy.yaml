@@ -1,0 +1,24 @@
+# No egress for replay Pods; CDP (9223) only from the orchestrator.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: pab-replay-no-egress
+spec:
+  podSelector:
+    matchLabels:
+      pab/role: replay
+  policyTypes: [Egress, Ingress]
+  # No egress except back to the orchestrator: some CNIs (e.g. kind's kindnet) also apply the egress
+  # rule to reply packets of allowed ingress connections. Containers in the Pod use localhost.
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: bench-orchestrator
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: bench-orchestrator
+      ports:
+        - { port: 9223, protocol: TCP }

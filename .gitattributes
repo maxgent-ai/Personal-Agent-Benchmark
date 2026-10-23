@@ -1,0 +1,2 @@
+# recording bundles are gzip archives; never diff or merge them as text
+tasks/**/bundle.tar.gz* binary

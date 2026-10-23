@@ -1,0 +1,10 @@
+# Inferred from the recording when it was packed; replaced on every new recording. Do not edit:
+# corrections go into a hand-written rules file for site "mediarithmics.com", which takes precedence.
+site: mediarithmics.com
+hosts:
+  - mediarithmics.com
+  - "*.mediarithmics.com"
+drop_params:
+  - key
+  - opid
+  - ops

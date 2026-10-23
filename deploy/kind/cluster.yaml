@@ -1,0 +1,9 @@
+# Throwaway kind cluster for checking the replay Pod and its NetworkPolicy.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    extraMounts:
+      - hostPath: REPO_ROOT
+        containerPath: /repo
+        readOnly: true

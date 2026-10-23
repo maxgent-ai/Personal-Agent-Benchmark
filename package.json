@@ -1,0 +1,43 @@
+{
+  "name": "personal-agent-benchmark",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A real-world benchmark for personal agents: tasks on real sites, replayed offline from network recordings.",
+  "bin": {
+    "pab": "bin/pab.js"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    "./*": {
+      "types": "./dist/src/*.d.ts",
+      "default": "./dist/src/*.js"
+    }
+  },
+  "files": [
+    "bin",
+    "dist/src",
+    "plugins",
+    "sites"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test \"dist/test/**/*.test.js\"",
+    "pab": "node bin/pab.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "playwright-core": "^1.64.1",
+    "tar": "^7.5.22",
+    "warcio": "^2.4.12",
+    "whistle": "^2.10.12",
+    "yaml": "^2.9.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2"
+  }
+}

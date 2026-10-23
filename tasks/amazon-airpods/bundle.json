@@ -1,0 +1,199 @@
+{
+  "task_id": "amazon-airpods",
+  "captured_from": "2026-10-22T10:40:57.458Z",
+  "captured_to": "2026-10-22T12:50:41.949Z",
+  "region": {
+    "country": "US",
+    "zip": "10001"
+  },
+  "sites": {
+    "amazon": {
+      "requests": 4499
+    },
+    "ib.adnxs.com": {
+      "requests": 4
+    },
+    "match.360yield.com": {
+      "requests": 1
+    },
+    "jadserve.postrelease.com": {
+      "requests": 1
+    },
+    "aa.agkn.com": {
+      "requests": 19
+    },
+    "smartadserver.com": {
+      "requests": 2
+    },
+    "dsum-sec.casalemedia.com": {
+      "requests": 2
+    },
+    "x.bidswitch.net": {
+      "requests": 2
+    },
+    "pbs.yahoo.com": {
+      "requests": 1
+    },
+    "id5-sync.com": {
+      "requests": 1
+    },
+    "capi.connatix.com": {
+      "requests": 2
+    },
+    "partners.tremorhub.com": {
+      "requests": 1
+    },
+    "public-prod-dspcookiematching.dmxleo.com": {
+      "requests": 1
+    },
+    "geo.ads.audio.thisisdax.com": {
+      "requests": 1
+    },
+    "spl.zeotap.com": {
+      "requests": 19
+    },
+    "fwmrm.net": {
+      "requests": 2
+    },
+    "www.imdb.com": {
+      "requests": 2
+    },
+    "sync.rfp.fout.jp": {
+      "requests": 1
+    },
+    "usersync.samplicio.us": {
+      "requests": 19
+    },
+    "ads.samba.tv": {
+      "requests": 19
+    },
+    "pixel.rubiconproject.com": {
+      "requests": 1
+    },
+    "ms-cookie-sync.presage.io": {
+      "requests": 1
+    },
+    "dpm.demdex.net": {
+      "requests": 2
+    },
+    "odr.mookie1.com": {
+      "requests": 18
+    },
+    "mediarithmics.com": {
+      "requests": 4
+    },
+    "doubleclick.net": {
+      "requests": 4
+    },
+    "sb.scorecardresearch.com": {
+      "requests": 2
+    },
+    "csync.loopme.me": {
+      "requests": 1
+    },
+    "us-u.openx.net": {
+      "requests": 3
+    },
+    "eb2.3lift.com": {
+      "requests": 2
+    },
+    "uipglob.semasio.net": {
+      "requests": 2
+    },
+    "crb.kargo.com": {
+      "requests": 1
+    },
+    "usersync.gumgum.com": {
+      "requests": 1
+    },
+    "image2.pubmatic.com": {
+      "requests": 1
+    },
+    "loadus.exelator.com": {
+      "requests": 19
+    },
+    "lciapi.ninthdecimal.com": {
+      "requests": 1
+    },
+    "pi.ispot.tv": {
+      "requests": 1
+    },
+    "ih.adscale.de": {
+      "requests": 2
+    },
+    "sync-amazon.ads.yieldmo.com": {
+      "requests": 1
+    },
+    "us-east-sync.richaudience.com": {
+      "requests": 1
+    },
+    "sync.taboola.com": {
+      "requests": 1
+    },
+    "target.digitalaudience.io": {
+      "requests": 19
+    },
+    "a2z.com": {
+      "requests": 1
+    },
+    "a655dada757be3b72bb03d5392bebf6b4.profile.tlv55-p2.cloudfront.net": {
+      "requests": 1
+    },
+    "image4.pubmatic.com": {
+      "requests": 1
+    },
+    "pagead2.googlesyndication.com": {
+      "requests": 8
+    },
+    "d2lbyuknrhysf9.cloudfront.net": {
+      "requests": 12
+    },
+    "d1f0esyb34c1g2.cloudfront.net": {
+      "requests": 1
+    }
+  },
+  "stats": {
+    "exchanges": 4711,
+    "responses_stored": 2526,
+    "revisits": 2185,
+    "bytes_payload": 64333528,
+    "skipped": 27,
+    "excluded": 19
+  },
+  "archive": [
+    {
+      "file": "bundle.tar.gz",
+      "bytes": 33328691,
+      "sha256": "3bb36fec9be8d0345bbf512d96ec46dc6bed92b196055a91af9a9558585dc4a3"
+    }
+  ],
+  "self_check": {
+    "checked_at": "2026-10-23T04:38:49.465Z",
+    "hit_rate": {
+      "document": {
+        "total": 12,
+        "hit": 12,
+        "miss": 0,
+        "rate": 1
+      },
+      "xhr": {
+        "total": 42,
+        "hit": 42,
+        "miss": 0,
+        "rate": 1
+      },
+      "static": {
+        "total": 938,
+        "hit": 933,
+        "miss": 5,
+        "rate": 0.995
+      },
+      "tracker": {
+        "total": 256,
+        "hit": 256,
+        "miss": 0,
+        "rate": 1
+      }
+    }
+  }
+}

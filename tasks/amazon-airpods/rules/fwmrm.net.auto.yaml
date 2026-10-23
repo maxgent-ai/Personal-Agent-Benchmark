@@ -1,0 +1,8 @@
+# Inferred from the recording when it was packed; replaced on every new recording. Do not edit:
+# corrections go into a hand-written rules file for site "fwmrm.net", which takes precedence.
+site: fwmrm.net
+hosts:
+  - fwmrm.net
+  - "*.fwmrm.net"
+drop_params:
+  - dspuid

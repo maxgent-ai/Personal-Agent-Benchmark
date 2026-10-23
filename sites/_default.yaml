@@ -1,0 +1,71 @@
+# Rules applied to every site. Site files add to these lists.
+site: _default
+hosts: []
+drop_params:
+  - _
+  - cb
+  - cachebuster
+  - rnd
+  - random
+  - nocache
+  - t
+  - ts
+  - timestamp
+  - utm_*
+  - fbclid
+  - gclid
+  - msclkid
+  - "*session*"
+body_drop:
+  - csrf*
+  - "*csrf*"
+  - "*token*"
+  - nonce
+  - timestamp
+  - requestId
+  - request_id
+  - "*session*"
+exclude:
+  - "*/errors/validateCaptcha*"
+block:
+  - "*.google-analytics.com"
+  - "*.googletagmanager.com"
+  - "*.doubleclick.net"
+  - "*.googlesyndication.com"
+  - "*.facebook.net"
+  - "*.facebook.com"
+  - "*.hotjar.com"
+  - "*.scorecardresearch.com"
+  - "*.adsrvr.org"
+  - "*.criteo.com"
+  - "*.criteo.net"
+  - "*.bing.com"
+  - "*.clarity.ms"
+  # ad-tech cookie syncing and impression pixels
+  - "*.agkn.com"
+  - "*.zeotap.com"
+  - "*.samplicio.us"
+  - "*.samba.tv"
+  - "*.mookie1.com"
+  - "*.pubmatic.com"
+  - "*.smartadserver.com"
+  - "*.fwmrm.net"
+  - "*.mediarithmics.com"
+  - "*.adnxs.com"
+  - "*.rubiconproject.com"
+  - "*.openx.net"
+  - "*.casalemedia.com"
+  - "*.bidswitch.net"
+  - "*.3lift.com"
+  - "*.rlcdn.com"
+  - "*.demdex.net"
+  # Chrome's own background services, not page traffic
+  - "content-autofill.googleapis.com"
+  - "update.googleapis.com"
+  - "optimizationguide-pa.googleapis.com"
+  - "safebrowsing.googleapis.com"
+  - "android.clients.google.com"
+  - "clients2.google.com"
+  - "accounts.google.com/ListAccounts*"
+  - "www.gstatic.com/ohttp_gateway/**"
+  - "www.google.com/async/folae*"

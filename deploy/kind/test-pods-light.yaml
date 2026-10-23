@@ -1,0 +1,48 @@
+# Light variant for memory-constrained machines: the replay container only (no Chromium),
+# an orchestrator-labelled Pod and an unlabelled one, to check the NetworkPolicy itself.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: replay-amazon-airpods
+  labels:
+    app: pab-replay
+    pab/role: replay
+spec:
+  restartPolicy: Never
+  volumes:
+    - name: task
+      hostPath: { path: /repo/tasks/amazon-airpods, type: Directory }
+    - name: cache
+      emptyDir: {}
+  containers:
+    - name: replay
+      image: pab-replay:latest
+      imagePullPolicy: Never
+      volumeMounts:
+        - { name: task, mountPath: /task, readOnly: true }
+        - { name: cache, mountPath: /cache }
+      readinessProbe:
+        tcpSocket: { port: 8899 }
+        periodSeconds: 2
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: orchestrator
+  labels:
+    app: bench-orchestrator
+spec:
+  restartPolicy: Never
+  containers:
+    - { name: probe, image: "node:22-slim", imagePullPolicy: Never, command: ["sleep", "3600"] }
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: outsider
+  labels:
+    app: not-allowed
+spec:
+  restartPolicy: Never
+  containers:
+    - { name: probe, image: "node:22-slim", imagePullPolicy: Never, command: ["sleep", "3600"] }

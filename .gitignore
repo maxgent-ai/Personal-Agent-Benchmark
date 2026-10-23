@@ -1,0 +1,6 @@
+node_modules/
+dist/
+# unpacked bundles and replay logs
+.cache/
+*.log
+.DS_Store

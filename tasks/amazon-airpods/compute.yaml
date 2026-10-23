@@ -1,0 +1,53 @@
+# Amazon cart for the AirPods Pro 3 scenario. Prices and page structure come from the recording
+# of 2026-10-22 (cart with 1 item at 12:50:21, 2 items at 12:50:34, empty cart at 12:46:16).
+symbol: "$"
+items:
+  B0FQFB8FMG: { title: "Apple AirPods Pro 3 Wireless Earbuds with Active Noise Cancellation", price: 199.00 }
+# The cart page shows the item subtotal only; tax and shipping appear at checkout (sign-in required).
+
+ops:
+  - endpoint: add_to_cart
+    op: add
+    item: { from: body, field: ASIN }
+    qty: { from: body, field: quantity, default: 1 }
+    respond: recorded
+  - endpoint: cart_update_quantity
+    op: set_qty
+    item: { from: body, field: asin }
+    qty: { from: body, field: "quantity.*" }
+    respond: recorded
+
+views:
+  - name: cart
+    endpoint: cart_view
+    type: html
+    template: { url_contains: "/gp/cart/view.html", contains: 'data-itemtype="active"', pick: first }
+    empty_template: { url_contains: "/gp/cart/view.html", contains: "Your Amazon Cart is empty", pick: first }
+    set:
+      - { selector: "#sc-subtotal-amount-buybox .sc-price", value: "{{money subtotal}}" }
+      - { selector: "#sc-subtotal-label-buybox", value: "Subtotal ({{count}} {{plural count 'item' 'items'}}):" }
+      - { selector: "#nav-cart-count", value: "{{count}}" }
+      # Amazon Visa banner: "Current subtotal" minus a fixed $50 gift card
+      - { selector: '[data-maple-math="cost"]', value: "{{money subtotal}}" }
+      - { selector: '[data-maple-math="cost-after-savings"]', value: "{{money_sub subtotal 50}}" }
+    lines:
+      row: 'div[data-asin][data-itemtype="active"]'
+      set:
+        - { selector: ":self", attr: data-quantity, value: "{{line.qty}}" }
+        - { selector: '[data-a-selector="inner-value"]', value: "{{line.qty}}" }
+        - { selector: 'input[name="quantityBox"]', attr: value, value: "{{line.qty}}" }
+
+decorate:
+  - site: amazon
+    set:
+      - { selector: "#nav-cart-count", value: "{{count}}" }
+
+samples:
+  - name: recorded cart with 1 item
+    state: { lines: [{ item: B0FQFB8FMG, qty: 1 }], codes: [] }
+    page: { url_contains: "/gp/cart/view.html", contains: 'data-quantity="1"' }
+    extract: { subtotal: "#sc-subtotal-amount-buybox .sc-price", count: "#nav-cart-count" }
+  - name: recorded cart with 2 items
+    state: { lines: [{ item: B0FQFB8FMG, qty: 2 }], codes: [] }
+    page: { url_contains: "/gp/cart/view.html", contains: 'data-quantity="2"' }
+    extract: { subtotal: "#sc-subtotal-amount-buybox .sc-price", count: "#nav-cart-count" }
