@@ -236,6 +236,8 @@ export class ReplayEngine {
         entry: out.entryId,
         detail: out.detail,
         ms,
+        // a missed request in full, so a rule fix can be worked out from the log
+        ...(out.source === 'miss' && req.body?.length ? { contentType: headerFromRecord(req.headers, 'content-type'), body: req.body.toString('base64') } : {}),
       };
       fs.appendFileSync(this.logFile, JSON.stringify(line) + '\n');
     }
