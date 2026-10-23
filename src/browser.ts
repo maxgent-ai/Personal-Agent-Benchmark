@@ -11,6 +11,8 @@ export interface BrowserOptions {
   locale?: string;
   timezoneId?: string;
   recordHarPath?: string;
+  /** Record a video of every page (tab) into this directory; saved when the page closes. */
+  recordVideo?: { dir: string; size?: { width: number; height: number } };
   /** Expose CDP on this port so an external agent can drive the same browser. */
   cdpPort?: number;
   args?: string[];
@@ -43,6 +45,7 @@ export async function launchBrowser(o: BrowserOptions): Promise<BrowserContext> 
     viewport: { width: 1440, height: 900 },
     serviceWorkers: 'block',
     recordHar: o.recordHarPath ? { path: o.recordHarPath, content: 'embed', mode: 'full' } : undefined,
+    recordVideo: o.recordVideo,
     args,
   });
 }
