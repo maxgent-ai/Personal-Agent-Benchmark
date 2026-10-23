@@ -49,6 +49,8 @@ export async function startReplayServer(o: ReplayServerOptions): Promise<ReplayS
 
   const env: NodeJS.ProcessEnv = { ...process.env, RR_BUNDLE: path.resolve(o.bundleDir), RR_LOG: o.logFile ? path.resolve(o.logFile) : '', RR_RULES: (o.rulesDirs ?? []).map((d) => path.resolve(d)).join(':'),
     RR_COMPUTE: o.computePath ? path.resolve(o.computePath) : '',
+    // inside an Electron app process.execPath is the app itself; this makes it behave as Node
+    ELECTRON_RUN_AS_NODE: '1',
   };
   for (const k of ['HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'http_proxy', 'https_proxy', 'all_proxy']) delete env[k];
   if (o.logFile) {
@@ -72,7 +74,8 @@ export async function startReplayServer(o: ReplayServerOptions): Promise<ReplayS
     '--dnsServer', '127.0.0.1:9',
   ];
   // whistle's `run` forks its real server; a separate process group lets stop() take both down.
-  const child = spawn(process.execPath, args, { env, stdio: ['ignore', out, out], detached: true });
+  // RR_NODE: the Node binary to run whistle with, when this process is not one (an app's helper)
+  const child = spawn(process.env.RR_NODE || process.execPath, args, { env, stdio: ['ignore', out, out], detached: true });
   const killGroup = (signal: NodeJS.Signals) => {
     try {
       if (child.pid) process.kill(-child.pid, signal);
