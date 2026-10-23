@@ -51,6 +51,10 @@ export async function startReplayServer(o: ReplayServerOptions): Promise<ReplayS
     RR_COMPUTE: o.computePath ? path.resolve(o.computePath) : '',
     // inside an Electron app process.execPath is the app itself; this makes it behave as Node
     ELECTRON_RUN_AS_NODE: '1',
+    // `whistle run` starts its server (STARTING_) and its plugins (PFORK_) with these binaries;
+    // unset, it spawns whatever "node" is on PATH, and an app opened from Finder has none
+    STARTING_EXEC_PATH: nodeBinary(),
+    PFORK_EXEC_PATH: nodeBinary(),
   };
   for (const k of ['HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'http_proxy', 'https_proxy', 'all_proxy']) delete env[k];
   if (o.logFile) {
@@ -74,8 +78,7 @@ export async function startReplayServer(o: ReplayServerOptions): Promise<ReplayS
     '--dnsServer', '127.0.0.1:9',
   ];
   // whistle's `run` forks its real server; a separate process group lets stop() take both down.
-  // RR_NODE: the Node binary to run whistle with, when this process is not one (an app's helper)
-  const child = spawn(process.env.RR_NODE || process.execPath, args, { env, stdio: ['ignore', out, out], detached: true });
+  const child = spawn(nodeBinary(), args, { env, stdio: ['ignore', out, out], detached: true });
   const killGroup = (signal: NodeJS.Signals) => {
     try {
       if (child.pid) process.kill(-child.pid, signal);
@@ -120,6 +123,11 @@ export async function startReplayServer(o: ReplayServerOptions): Promise<ReplayS
         setTimeout(() => killGroup('SIGKILL'), 5000).unref();
       }),
   };
+}
+
+/** The Node binary for whistle: RR_NODE when this process is not one (an Electron helper), else this one. */
+function nodeBinary(): string {
+  return process.env.RR_NODE || process.execPath;
 }
 
 /** GET a URL through the proxy and parse JSON. */
