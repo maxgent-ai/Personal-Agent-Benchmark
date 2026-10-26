@@ -12,8 +12,11 @@ Real-site tasks for personal agents, replayed offline from network recordings th
 - `plugins/whistle.bench-replay/` thin plugin package loading `dist/src/replay/whistle-plugin.js`.
 - `deploy/` the replay image and per-task images (built locally, never pushed), a stand-in for the agent's browser, and a local Docker check. How a platform schedules replays is that platform's integration; `docs/deploy.md` says what it must ensure.
 
-The recording tool lives in a separate, internal repository and depends on this package
-(`personal-agent-benchmark/<module>` imports). Keep exported module paths stable.
+The recording tool lives in a separate, internal repository and depends on this package as
+published to npm, at an exact version (`personal-agent-benchmark/<module>` imports). `exports` in
+`package.json` lists the module paths it may import. A change to those modules, to the recording
+format (`RECORDING_FORMAT`) or to request matching ships as a new version: a new minor version
+while the package is 0.x.
 
 ## Rules
 

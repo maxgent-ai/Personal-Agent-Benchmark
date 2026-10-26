@@ -80,6 +80,21 @@ node bin/pab.js audit                          # check recordings are safe to pu
 node bin/pab.js stats .cache/logs/replay-*.jsonl
 ```
 
+## As a package
+
+The replay engine, the recording format and the `pab` command are published to npm as
+`personal-agent-benchmark`; tasks are not part of the package.
+
+```bash
+npm install personal-agent-benchmark@0.1.0
+npx pab replay path/to/tasks/<id>
+```
+
+Modules are imported by path, for example `personal-agent-benchmark/scoring` or
+`personal-agent-benchmark/core/rules`; `exports` in `package.json` lists them. While the version
+is 0.x, a new minor version may change them. 0.1.x reads and writes recordings in format 2
+([docs/bundle-format.md](docs/bundle-format.md)); a new format comes with a new minor version.
+
 ## Tasks
 
 No task is published yet; `node bin/pab.js list` shows the tasks of a checkout.

@@ -1,27 +1,106 @@
 {
   "name": "personal-agent-benchmark",
   "version": "0.1.0",
-  "private": true,
   "description": "A real-world benchmark for personal agents: tasks on real sites, replayed offline from network recordings.",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxgent-ai/Personal-Agent-Benchmark.git"
+  },
+  "homepage": "https://github.com/maxgent-ai/Personal-Agent-Benchmark#readme",
+  "bugs": "https://github.com/maxgent-ai/Personal-Agent-Benchmark/issues",
   "bin": {
     "pab": "bin/pab.js"
   },
   "exports": {
     "./package.json": "./package.json",
-    "./*": {
-      "types": "./dist/src/*.d.ts",
-      "default": "./dist/src/*.js"
+    "./browser": {
+      "types": "./dist/src/browser.d.ts",
+      "default": "./dist/src/browser.js"
+    },
+    "./cli": {
+      "types": "./dist/src/cli.d.ts",
+      "default": "./dist/src/cli.js"
+    },
+    "./grading": {
+      "types": "./dist/src/grading.d.ts",
+      "default": "./dist/src/grading.js"
+    },
+    "./judge": {
+      "types": "./dist/src/judge.d.ts",
+      "default": "./dist/src/judge.js"
+    },
+    "./scoring": {
+      "types": "./dist/src/scoring.d.ts",
+      "default": "./dist/src/scoring.js"
+    },
+    "./tasks": {
+      "types": "./dist/src/tasks.d.ts",
+      "default": "./dist/src/tasks.js"
+    },
+    "./replay/engine": {
+      "types": "./dist/src/replay/engine.d.ts",
+      "default": "./dist/src/replay/engine.js"
+    },
+    "./replay/launcher": {
+      "types": "./dist/src/replay/launcher.d.ts",
+      "default": "./dist/src/replay/launcher.js"
+    },
+    "./core/archive": {
+      "types": "./dist/src/core/archive.d.ts",
+      "default": "./dist/src/core/archive.js"
+    },
+    "./core/audit": {
+      "types": "./dist/src/core/audit.d.ts",
+      "default": "./dist/src/core/audit.js"
+    },
+    "./core/bundle": {
+      "types": "./dist/src/core/bundle.d.ts",
+      "default": "./dist/src/core/bundle.js"
+    },
+    "./core/lookup": {
+      "types": "./dist/src/core/lookup.d.ts",
+      "default": "./dist/src/core/lookup.js"
+    },
+    "./core/normalize": {
+      "types": "./dist/src/core/normalize.d.ts",
+      "default": "./dist/src/core/normalize.js"
+    },
+    "./core/rules": {
+      "types": "./dist/src/core/rules.d.ts",
+      "default": "./dist/src/core/rules.js"
+    },
+    "./core/store": {
+      "types": "./dist/src/core/store.d.ts",
+      "default": "./dist/src/core/store.js"
+    },
+    "./core/types": {
+      "types": "./dist/src/core/types.d.ts",
+      "default": "./dist/src/core/types.js"
+    },
+    "./core/util": {
+      "types": "./dist/src/core/util.d.ts",
+      "default": "./dist/src/core/util.js"
+    },
+    "./core/warc": {
+      "types": "./dist/src/core/warc.d.ts",
+      "default": "./dist/src/core/warc.js"
+    },
+    "./core/writer": {
+      "types": "./dist/src/core/writer.d.ts",
+      "default": "./dist/src/core/writer.js"
     }
   },
   "files": [
     "bin",
     "dist/src",
+    "docs",
     "plugins",
     "sites"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "prepare": "tsc -p tsconfig.json",
+    "build": "rm -rf dist && tsc -p tsconfig.json",
+    "prepare": "npm run build",
     "test": "npm run build && node --test \"dist/test/**/*.test.js\"",
     "pab": "node bin/pab.js"
   },
