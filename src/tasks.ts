@@ -1,13 +1,13 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import YAML from 'yaml';
-import { archiveParts, extractArchive, hashParts, isBundleFile } from './core/archive';
+import { hashParts, recordingFiles, unpackRecording } from './core/archive';
 import { PACKAGE_ROOT } from './paths';
 
 /**
  * tasks/<id>/ in this repository:
  *   task.yaml        the task card (what the agent is asked)
- *   bundle.tar.gz    the recording (or bundle.tar.gz.000, .001, ... when split)
+ *   recording/       the recording, in the published layout (core/archive.ts, docs/bundle-format.md)
  *   rules/           site rules for this task: <site>.auto.yaml inferred from the recording,
  *                    <site>.yaml written by people (wins over auto and over sites/)
  *   grading.yaml     how answers to the task are scored (docs/grading.md)
@@ -63,7 +63,7 @@ export class Task {
 
   get id(): string { return path.basename(this.dir); }
   get cardPath(): string { return path.join(this.dir, 'task.yaml'); }
-  get archivePath(): string { return path.join(this.dir, 'bundle.tar.gz'); }
+  get recordingDir(): string { return path.join(this.dir, 'recording'); }
   get rulesDir(): string { return path.join(this.dir, 'rules'); }
   /** grading.yaml: how answers are scored (see grading.ts). */
   get gradingPath(): string { return path.join(this.dir, 'grading.yaml'); }
@@ -73,22 +73,23 @@ export class Task {
     return { ...card, id: card?.id ?? this.id };
   }
 
-  archiveParts(): string[] {
-    return archiveParts(this.archivePath);
+  /** Files of the recording; empty when the task has none yet. */
+  recordingFiles(): string[] {
+    return recordingFiles(this.recordingDir);
   }
 
-  /** Unpacks the recording into the cache (once per archive content) and returns its directory. */
+  /** Unpacks the recording into the cache (once per recording content) and returns its directory. */
   async bundleDir(): Promise<string> {
-    const parts = this.archiveParts();
-    if (!parts.length) throw new Error(`task ${this.id} has no recording (${this.archivePath})`);
-    const digest = hashParts(parts).slice(0, 16);
+    const files = this.recordingFiles();
+    if (!files.length) throw new Error(`task ${this.id} has no recording (${this.recordingDir})`);
+    const digest = hashParts(files).slice(0, 16);
     const bundlesDir = path.join(this.repo.cacheDir, 'bundles');
     const dest = path.join(bundlesDir, `${this.id}-${digest}`);
     if (fs.existsSync(path.join(dest, 'manifest.json'))) return dest;
     const tmp = `${dest}.tmp-${process.pid}`;
     fs.rmSync(tmp, { recursive: true, force: true });
     try {
-      await extractArchive(parts, tmp, isBundleFile);
+      await unpackRecording(this.recordingDir, tmp);
       fs.rmSync(dest, { recursive: true, force: true });
       fs.renameSync(tmp, dest);
     } catch (err) {

@@ -27,7 +27,7 @@ agent ─▶ browser ─▶ replay proxy (whistle + replay plugin) ─▶ record
 ## Repository layout
 
 ```text
-tasks/<id>/        one task: task.yaml, bundle.tar.gz (the recording), rules/, grading.yaml
+tasks/<id>/        one task: task.yaml, recording/, rules/, grading.yaml
 sites/             site rules shared by all tasks (_default.yaml applies everywhere)
 src/               replay engine, whistle plugin, bundle format, CLI (pab)
 plugins/           whistle plugin package that loads the replay engine
@@ -104,7 +104,7 @@ for evaluating agents. To have content removed, open an issue.
 ## Documentation
 
 - [docs/tasks.md](docs/tasks.md): task directory, task card, how a task is added
-- [docs/bundle-format.md](docs/bundle-format.md): what is inside `bundle.tar.gz`
+- [docs/bundle-format.md](docs/bundle-format.md): what is inside `recording/`, and its format version
 - [docs/site-rules.md](docs/site-rules.md): request matching and site rules
 - [docs/grading.md](docs/grading.md): how answers to a task are scored
 - [docs/deploy.md](docs/deploy.md): replay and task images, what a platform running replays must ensure

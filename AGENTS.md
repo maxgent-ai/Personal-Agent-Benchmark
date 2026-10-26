@@ -4,7 +4,7 @@ Real-site tasks for personal agents, replayed offline from network recordings th
 
 ## Layout
 
-- `tasks/<id>/` one task: `task.yaml`, `bundle.tar.gz` (recording), `rules/`, `grading.yaml`. Format: `docs/tasks.md`, grading in `docs/grading.md` (`src/grading.ts` validates it).
+- `tasks/<id>/` one task: `task.yaml`, `recording/`, `rules/`, `grading.yaml`. Format: `docs/tasks.md`, grading in `docs/grading.md` (`src/grading.ts` validates it).
 - `sites/` site rules shared by all tasks; `_default.yaml` applies to every site.
 - `src/core/` bundle format (`bundle.ts`, `writer.ts`, `warc.ts`, `archive.ts`), request normalization (`normalize.ts`), site rules (`rules.ts`), index (`store.ts`), lookup ladder (`lookup.ts`), publish audit (`audit.ts`).
 - `src/replay/` replay engine, whistle plugin entry, whistle launcher, page clock.
@@ -19,7 +19,7 @@ The recording tool lives in a separate, internal repository and depends on this 
 
 - The replay path never opens a network connection. Misses are answered locally and logged.
 - Normalization and lookup exist once, in `src/core/`; do not copy them.
-- `tasks/<id>/bundle.tar.gz*` and `rules/*.auto.yaml` are written by the import step of the recording tool; do not edit them by hand. Corrections go into `rules/<site>.yaml` or `sites/<site>.yaml`.
+- `tasks/<id>/recording/` and `rules/*.auto.yaml` are written by the import step of the recording tool; do not edit them by hand. Corrections go into `rules/<site>.yaml` or `sites/<site>.yaml`.
 - Every recording must pass `pab audit` (no cookies or credentials, no excluded pages, no recorder name) before it is committed.
 - Never commit unpacked bundles (`.cache/`).
 - Documentation is in English.

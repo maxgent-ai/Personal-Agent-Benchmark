@@ -9,7 +9,7 @@ export interface AuditFinding {
   detail: string;
 }
 
-const MANIFEST_KEYS: string[] = ['task_id', 'captured_from', 'captured_to', 'not_found', 'locale', 'timezone'] satisfies (keyof Manifest)[];
+const MANIFEST_KEYS: string[] = ['task_id', 'captured_from', 'captured_to', 'not_found', 'locale', 'timezone', 'format'] satisfies (keyof Manifest)[];
 /** Written by recordings made before 2026-10-26; replay ignores it and the next import drops it. */
 const LEGACY_MANIFEST_KEYS = ['start_url'];
 const CREDENTIAL_REQUEST_HEADERS = ['cookie', 'authorization', 'proxy-authorization', 'x-amz-access-token'];
