@@ -31,7 +31,7 @@ tasks/<id>/        one task: task.yaml, bundle.tar.gz (the recording), rules/, g
 sites/             site rules shared by all tasks (_default.yaml applies everywhere)
 src/               replay engine, whistle plugin, bundle format, CLI (pab)
 plugins/           whistle plugin package that loads the replay engine
-deploy/            replay service image, browser image, Pod and NetworkPolicy examples
+deploy/            replay and task images (built locally), a local Docker check
 docs/              task format, bundle format, site rules, deployment
 ```
 
@@ -92,8 +92,8 @@ See [docs/tasks.md](docs/tasks.md) for the task format and how tasks are added.
   included, to the replay plugin. The plugin only reads the recording.
 - Its DNS points at a dead address and proxy variables are removed, so even a request that slipped
   past the plugin could not resolve a host.
-- In Kubernetes, a NetworkPolicy blocks egress from the replay Pod. See
-  [docs/deploy.md](docs/deploy.md).
+- The platform that runs the replay keeps it off the network and the agent's browser to the
+  proxy; [docs/deploy.md](docs/deploy.md) lists what it must ensure.
 
 ## Recordings
 
@@ -107,7 +107,7 @@ for evaluating agents. To have content removed, open an issue.
 - [docs/bundle-format.md](docs/bundle-format.md): what is inside `bundle.tar.gz`
 - [docs/site-rules.md](docs/site-rules.md): request matching and site rules
 - [docs/grading.md](docs/grading.md): how answers to a task are scored
-- [docs/deploy.md](docs/deploy.md): replay service image, Pod, NetworkPolicy
+- [docs/deploy.md](docs/deploy.md): replay and task images, what a platform running replays must ensure
 
 ## License
 

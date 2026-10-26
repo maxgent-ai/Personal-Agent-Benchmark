@@ -10,7 +10,7 @@ Real-site tasks for personal agents, replayed offline from network recordings th
 - `src/replay/` replay engine, whistle plugin entry, whistle launcher, page clock.
 - `src/tasks.ts` task resolution and unpacking; `src/cli.ts` the `pab` command.
 - `plugins/whistle.bench-replay/` thin plugin package loading `dist/src/replay/whistle-plugin.js`.
-- `deploy/` replay and browser images, Pod and NetworkPolicy, local and kind checks.
+- `deploy/` the replay image and per-task images (built locally, never pushed), a stand-in for the agent's browser, and a local Docker check. How a platform schedules replays is that platform's integration; `docs/deploy.md` says what it must ensure.
 
 The recording tool lives in a separate, internal repository and depends on this package
 (`personal-agent-benchmark/<module>` imports). Keep exported module paths stable.

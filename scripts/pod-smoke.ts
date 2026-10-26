@@ -1,7 +1,7 @@
 import { chromium } from 'playwright-core';
 
 /**
- * Drives the browser container of a replay Pod over CDP (RR_CDP=http://<ip>:9223), opens a page
+ * Drives a browser behind the replay proxy over CDP (RR_CDP=http://<ip>:9223), opens a page
  * and reports what an agent would see, plus the browser's clock. Used by deploy/local-pod-test.sh.
  */
 async function main(): Promise<void> {

@@ -1,5 +1,6 @@
-# Replay service image: whistle + the replay plugin. Mount one task directory (tasks/<id>/ from
-# this repository) at /task; the recording is unpacked into $PAB_CACHE when the service starts.
+# Replay service image: whistle + the replay plugin. Serves the task directory at /task (copied out
+# of the task's image, see docs/deploy.md); the recording is unpacked into $PAB_CACHE when the
+# service starts. Built by deploy/build-images.sh.
 FROM node:22-slim AS build
 WORKDIR /app
 COPY package.json package-lock.json tsconfig.json ./
