@@ -1,9 +1,0 @@
-id: amazon-airpods
-title: Buy AirPods Pro 3 on Amazon
-prompt: >-
-  I want Apple AirPods Pro 3 from Amazon, shipped to New York (ZIP 10001). Find the official
-  listing, put one in the cart, and tell me the item price and the cart subtotal. Do not place
-  the order.
-capture:
-  locale: en-US
-  timezone: America/New_York

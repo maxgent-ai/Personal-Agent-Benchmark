@@ -1,13 +1,13 @@
 #!/bin/sh
 # Simulates the replay Pod with Docker: replay service + browser on an internal network without
 # internet access, then drives the browser over CDP from a third container.
-#   sh deploy/local-pod-test.sh tasks/amazon-airpods "https://www.amazon.com/dp/B0FQFB8FMG"
+#   sh deploy/local-pod-test.sh tasks/<id> "<a recorded page URL>"
 set -e
 cd "$(dirname "$0")/.."
-TASK=${1:-tasks/amazon-airpods}
-URL=${2:-https://www.amazon.com/dp/B0FQFB8FMG}
+TASK=${1:?usage: sh deploy/local-pod-test.sh tasks/<id> <a recorded page URL>}
+URL=${2:?usage: sh deploy/local-pod-test.sh tasks/<id> <a recorded page URL>}
 NET=pab-pod
-CAPTURED=$(node -e "const m=require('./$TASK/bundle.json'); console.log(m.captured_from.slice(0,19).replace('T',' '))")
+CAPTURED=$(node -e "const m=require('./$TASK/bundle.json'); console.log(m.recordings[0].captured_from.slice(0,19).replace('T',' '))")
 
 cleanup() { docker rm -f pab-pod-replay pab-pod-browser >/dev/null 2>&1 || true; docker network rm $NET >/dev/null 2>&1 || true; }
 trap cleanup EXIT

@@ -4,3 +4,5 @@ dist/
 .cache/
 *.log
 .DS_Store
+# hand-off archives waiting for review (record-replay: npm run inbox)
+/inbox/

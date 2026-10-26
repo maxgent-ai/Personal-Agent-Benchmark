@@ -43,19 +43,19 @@ Needs Node 22+ and Google Chrome.
 npm install
 npm run build
 node bin/pab.js list
-node bin/pab.js replay amazon-airpods
+node bin/pab.js replay <task>
 ```
 
 `replay` unpacks the task's recording into `.cache/`, starts the replay proxy and opens a Chrome
-window that uses it, at the task's start URL. Close the window to stop; hit rates are printed at the
+window that uses it, at the first page opened while recording. Close the window to stop; hit rates are printed at the
 end.
 
 Connecting an agent:
 
 ```bash
-node bin/pab.js replay amazon-airpods --cdp-port 9333   # the agent drives this Chrome over CDP
-node bin/pab.js replay amazon-airpods --no-browser      # proxy only; bring your own browser
-node bin/pab.js serve amazon-airpods --port 8899 --host 0.0.0.0   # in a container
+node bin/pab.js replay <task> --cdp-port 9333   # the agent drives this Chrome over CDP
+node bin/pab.js replay <task> --no-browser      # proxy only; bring your own browser
+node bin/pab.js serve <task> --port 8899 --host 0.0.0.0   # in a container
 ```
 
 A browser of your own needs `--proxy-server=http://127.0.0.1:<port> --ignore-certificate-errors
@@ -65,16 +65,14 @@ hits and misses, `reset` starts a new run.
 Other commands:
 
 ```bash
-node bin/pab.js inspect amazon-airpods "https://www.amazon.com/s?k=airpods+pro"   # key and match of one request
+node bin/pab.js inspect <task> "https://www.amazon.com/s?k=airpods+pro"   # key and match of one request
 node bin/pab.js audit                          # check recordings are safe to publish
 node bin/pab.js stats .cache/logs/replay-*.jsonl
 ```
 
 ## Tasks
 
-| Task | Sites | Recorded |
-|---|---|---|
-| [amazon-airpods](tasks/amazon-airpods/task.yaml) | amazon.com | 2026-10-22 |
+No task is published yet; `node bin/pab.js list` shows the tasks of a checkout.
 
 See [docs/tasks.md](docs/tasks.md) for the task format and how tasks are added.
 

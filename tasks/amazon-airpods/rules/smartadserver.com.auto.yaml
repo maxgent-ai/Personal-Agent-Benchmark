@@ -1,9 +1,0 @@
-# Inferred from the recording when it was packed; replaced on every new recording. Do not edit:
-# corrections go into a hand-written rules file for site "smartadserver.com", which takes precedence.
-site: smartadserver.com
-hosts:
-  - smartadserver.com
-  - "*.smartadserver.com"
-drop_params:
-  - partnerid
-  - partneruserid

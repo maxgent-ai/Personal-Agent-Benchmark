@@ -28,7 +28,7 @@ that bring their own browser.
 
 ```bash
 npm run build
-sh deploy/local-pod-test.sh tasks/amazon-airpods     # Docker internal network, no internet
+sh deploy/local-pod-test.sh tasks/<id> <URL>        # Docker internal network, no internet
 sh deploy/kind/test.sh                               # throwaway kind cluster with the NetworkPolicy
 sh deploy/kind/test-netpol.sh                        # NetworkPolicy only, no Chromium (less memory)
 ```
