@@ -6,7 +6,6 @@ One directory per task under `tasks/`:
 tasks/<id>/
   task.yaml          the task card
   bundle.tar.gz      the recording (bundle.tar.gz.000, .001, ... when larger than 45 MB)
-  bundle.json        the recordings merged into bundle.tar.gz (time ranges), written on import
   grading.yaml       how answers are scored (docs/grading.md)
   rules/             site rules for this task
     <site>.auto.yaml   inferred from the recording; regenerated on every import, do not edit
@@ -51,7 +50,7 @@ The steps are:
    cookies, credentials and listed personal data, infers site rules, and replays every recorded
    page once to measure hit rates.
 3. A maintainer imports the recording. The import refuses recordings that fail `pab audit`,
-   writes `bundle.tar.gz`, `bundle.json` and `rules/*.auto.yaml`, and leaves hand-written files
+   writes `bundle.tar.gz` and `rules/*.auto.yaml`, and leaves hand-written files
    alone. Tasks are recorded signed out, so page text is not scanned for personal data.
 4. The maintainer replays the task (`pab replay <id>`), fixes misses with rules, and opens a pull
    request.

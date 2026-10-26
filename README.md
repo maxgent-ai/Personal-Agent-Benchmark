@@ -27,7 +27,7 @@ agent ─▶ browser ─▶ replay proxy (whistle + replay plugin) ─▶ record
 ## Repository layout
 
 ```text
-tasks/<id>/        one task: task.yaml, bundle.tar.gz (the recording), bundle.json, rules/
+tasks/<id>/        one task: task.yaml, bundle.tar.gz (the recording), rules/, grading.yaml
 sites/             site rules shared by all tasks (_default.yaml applies everywhere)
 src/               replay engine, whistle plugin, bundle format, CLI (pab)
 plugins/           whistle plugin package that loads the replay engine
