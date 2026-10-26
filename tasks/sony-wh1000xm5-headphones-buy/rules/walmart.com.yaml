@@ -1,0 +1,8 @@
+# Walmart's real-user monitoring beacon and bot sensor: no page content.
+site: walmart.com
+hosts:
+  - walmart.com
+  - "*.walmart.com"
+block:
+  - b.www.walmart.com/rum.gif*
+  - www.walmart.com/si/*/obs*

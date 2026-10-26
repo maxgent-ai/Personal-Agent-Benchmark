@@ -1,8 +1,0 @@
-# Found by replaying this task: these values differed between recording and replay without changing
-# the content. Regenerated on every ingest; do not edit.
-site: attentivemobile.com
-hosts:
-  - attentivemobile.com
-  - "*.attentivemobile.com"
-body_drop:
-  - d
