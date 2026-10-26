@@ -9,7 +9,9 @@ export interface AuditFinding {
   detail: string;
 }
 
-const MANIFEST_KEYS: (keyof Manifest)[] = ['task_id', 'captured_from', 'captured_to', 'not_found', 'start_url', 'locale', 'timezone'];
+const MANIFEST_KEYS: string[] = ['task_id', 'captured_from', 'captured_to', 'not_found', 'locale', 'timezone'] satisfies (keyof Manifest)[];
+/** Written by recordings made before 2026-10-26; replay ignores it and the next import drops it. */
+const LEGACY_MANIFEST_KEYS = ['start_url'];
 const CREDENTIAL_REQUEST_HEADERS = ['cookie', 'authorization', 'proxy-authorization', 'x-amz-access-token'];
 
 /**
@@ -25,7 +27,7 @@ export async function auditBundle(bundle: Bundle, rules: RuleSet): Promise<Audit
   }
   if (findings.length) return findings;
 
-  const extra = Object.keys(bundle.manifest()).filter((k) => !MANIFEST_KEYS.includes(k as keyof Manifest));
+  const extra = Object.keys(bundle.manifest()).filter((k) => !MANIFEST_KEYS.includes(k) && !LEGACY_MANIFEST_KEYS.includes(k));
   if (extra.length) findings.push({ check: 'manifest', detail: `manifest.json records fields replay does not use: ${extra.join(', ')}` });
 
   const add = (check: string, detail: string) => {

@@ -147,7 +147,8 @@ async function cmdReplay(positional: string[], flags: Args['flags']): Promise<vo
   await context.clock.install({ time: new Date(manifest.captured_from) });
   if (cdpPort) console.log(`CDP: http://127.0.0.1:${cdpPort} (an agent can drive this browser)`);
   const page = context.pages()[0] ?? (await context.newPage());
-  const url = str(flags.url) ?? target.startUrl ?? manifest.start_url ?? bundle.pages()[0]?.url;
+  // the first page opened while recording, unless told otherwise
+  const url = str(flags.url) ?? bundle.pages().find((p) => p.note !== 'not-found-probe')?.url;
   if (url) await page.goto(url, { waitUntil: 'domcontentloaded' }).catch((e) => console.error(String(e)));
   console.log('Close the browser window or press Ctrl-C to stop.');
   await new Promise<void>((resolve) => {

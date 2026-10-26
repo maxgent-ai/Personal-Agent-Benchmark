@@ -91,8 +91,6 @@ export interface Manifest {
   captured_to: string;
   /** Each site's own 404 page, answered for documents replay cannot find. */
   not_found: Record<string, string>;
-  /** Replay opens this page when nothing else is given. */
-  start_url?: string;
   /** Replay browsers use the recording's language and time zone. */
   locale?: string;
   timezone?: string;

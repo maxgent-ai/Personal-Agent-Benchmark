@@ -6,7 +6,7 @@ import { PACKAGE_ROOT } from './paths';
 
 /**
  * tasks/<id>/ in this repository:
- *   task.yaml        the task card (what the agent is asked, where it starts)
+ *   task.yaml        the task card (what the agent is asked)
  *   bundle.tar.gz    the recording (or bundle.tar.gz.000, .001, ... when split)
  *   bundle.json      the recordings merged into it (time ranges), written on import
  *   rules/           site rules for this task: <site>.auto.yaml inferred from the recording,
@@ -18,10 +18,8 @@ export interface TaskCard {
   title?: string;
   /** The instruction given to the agent. */
   prompt?: string;
-  start_url?: string;
-  sites?: string[];
-  /** Notes for the person recording the task. */
-  capture?: { guide?: string; region?: { country?: string; zip?: string }; locale?: string; timezone?: string };
+  /** The browser's language and time zone while recording; replay keeps them. */
+  capture?: { locale?: string; timezone?: string };
 }
 
 /** Everything a replay needs: the recording, the rules layered over it, and the compute rules. */
@@ -32,7 +30,6 @@ export interface ReplayTarget {
   rulesDirs: string[];
   /** compute.yaml replacing the bundle's own; undefined uses the bundle's. */
   computePath?: string;
-  startUrl?: string;
   task?: Task;
 }
 
@@ -117,7 +114,6 @@ export class Task {
       bundleDir: await this.bundleDir(),
       rulesDirs: [this.repo.sitesDir, this.rulesDir],
       computePath: this.computePath,
-      startUrl: this.card().start_url,
       task: this,
     };
   }

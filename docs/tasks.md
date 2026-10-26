@@ -20,15 +20,9 @@ id: amazon-airpods
 title: Buy AirPods Pro 3 on Amazon
 prompt: >-                       # the instruction given to the agent
   I want Apple AirPods Pro 3 from Amazon, shipped to New York (ZIP 10001). ...
-start_url: https://www.amazon.com/
-sites: [amazon.com]
-capture:                         # for the person recording the task
-  region: { country: US, zip: "10001" }
-  locale: en-US
+capture:                         # the browser's language and time zone while recording;
+  locale: en-US                  # replay keeps them
   timezone: America/New_York
-  guide: |
-    1. Set the delivery ZIP to 10001 first.
-    ...
 ```
 
 ## Which rules apply
@@ -66,4 +60,4 @@ inferred again from both. The import can instead prefer the new copies or replac
 Prices and pages change over time, so the import re-checks `compute.yaml` samples
 (`pab compute-check <id>`).
 
-To propose a task, open an issue with the instruction, the start URL and the sites involved.
+To propose a task, open an issue with the instruction and the sites involved.

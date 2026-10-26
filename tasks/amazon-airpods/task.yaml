@@ -4,15 +4,6 @@ prompt: >-
   I want Apple AirPods Pro 3 from Amazon, shipped to New York (ZIP 10001). Find the official
   listing, put one in the cart, and tell me the item price and the cart subtotal. Do not place
   the order.
-start_url: https://www.amazon.com/
-sites: [amazon.com]
 capture:
-  region: { country: US, zip: "10001" }
   locale: en-US
   timezone: America/New_York
-  guide: |
-    1. Set the delivery ZIP to 10001 first.
-    2. Search three ways (e.g. "airpods pro 3", "apple airpods pro 2", "airpods pro"), open page 2 once.
-    3. Open the AirPods Pro 3 listing from the results and once directly (/dp/B0FQFB8FMG).
-    4. Add one to the cart (decline AppleCare), open the cart, change the quantity to 2.
-    5. Never check out.

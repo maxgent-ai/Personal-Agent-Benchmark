@@ -7,7 +7,7 @@ import { header, mimeOf, sha256, writeJson, writeJsonl } from './util';
 import { WarcWriter } from './warc';
 
 /** The manifest fields a recorder knows before writing; the rest come from the exchanges. */
-export type BundleMeta = Pick<Manifest, 'task_id' | 'start_url' | 'locale' | 'timezone'>;
+export type BundleMeta = Pick<Manifest, 'task_id' | 'locale' | 'timezone'>;
 
 export interface WriteBundleOptions {
   meta: BundleMeta;
@@ -97,7 +97,6 @@ export async function writeBundle(bundle: Bundle, exchanges: Exchange[], o: Writ
     captured_from: entries[0].ts,
     captured_to: entries[entries.length - 1].ts,
     not_found: notFound,
-    start_url: o.meta.start_url,
     locale: o.meta.locale,
     timezone: o.meta.timezone,
   };

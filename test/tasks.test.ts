@@ -19,7 +19,7 @@ async function shopRepo(): Promise<{ repo: Repo; bundleDir: string }> {
   writeFile(path.join(root, 'sites', 'shop.yaml'), SHOP_RULES);
   fs.copyFileSync(path.join(REPO_ROOT, 'sites', '_default.yaml'), path.join(root, 'sites', '_default.yaml'));
   const task = path.join(root, 'tasks', 'shop-earbuds');
-  writeFile(path.join(task, 'task.yaml'), 'id: shop-earbuds\ntitle: Buy earbuds\nstart_url: https://shop.test/\n');
+  writeFile(path.join(task, 'task.yaml'), 'id: shop-earbuds\ntitle: Buy earbuds\n');
   writeFile(path.join(task, 'compute.yaml'), COMPUTE);
   // a task-level correction on top of the shared site rules
   writeFile(path.join(task, 'rules', 'shop.yaml'), 'site: shop\nhosts: ["shop.test"]\nblock: ["shop.test/api/offers"]\n');
@@ -32,7 +32,6 @@ test('a task replays from its archive with shared and task rules and its compute
   const { repo } = await shopRepo();
   assert.deepEqual(repo.taskIds(), ['shop-earbuds']);
   const target = await resolveTarget('shop-earbuds', repo);
-  assert.equal(target.startUrl, 'https://shop.test/');
   assert.ok(target.bundleDir.startsWith(path.join(repo.cacheDir, 'bundles', 'shop-earbuds-')));
   assert.equal(await (await resolveTarget(path.join(repo.tasksDir, 'shop-earbuds'), repo)).bundleDir, target.bundleDir, 'unpacked once');
 
@@ -51,6 +50,10 @@ test('a task replays from its archive with shared and task rules and its compute
 test('audit passes a clean bundle and reports credentials, live cookies and the recorder', async () => {
   const { bundleDir } = await shopRepo();
   const rules = RuleSet.load([path.join(bundleDir, 'rules')]);
+  assert.deepEqual(await auditBundle(new Bundle(bundleDir), rules), []);
+  // published recordings made before start_url was dropped still pass
+  const manifest = new Bundle(bundleDir).manifestPath;
+  fs.writeFileSync(manifest, JSON.stringify({ ...JSON.parse(fs.readFileSync(manifest, 'utf8')), start_url: 'https://shop.test/' }));
   assert.deepEqual(await auditBundle(new Bundle(bundleDir), rules), []);
 
   const dirty = await buildShopBundle();

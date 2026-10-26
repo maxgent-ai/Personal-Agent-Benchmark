@@ -24,7 +24,6 @@ and unpack as before.
   "captured_from": "2026-10-22T10:40:57.458Z",
   "captured_to": "2026-10-22T12:50:41.949Z",
   "not_found": { "amazon": "https://www.amazon.com/rr-not-found-mgxy1k2a" },
-  "start_url": "https://www.amazon.com/",
   "locale": "en-US",
   "timezone": "America/New_York"
 }
@@ -36,11 +35,12 @@ and unpack as before.
 | `captured_from` | page clocks start here during replay |
 | `captured_to` | with `captured_from`, tells merged recordings apart |
 | `not_found` | each site's own 404 page, answered for documents replay cannot find |
-| `start_url` | the page replay opens when nothing else is given |
 | `locale`, `timezone` | the replay browser's language and time zone |
 
 Nothing else is recorded: not who recorded it, where from, with which browser, or request
-counts. `pab audit` fails a manifest with any other field.
+counts. `pab audit` fails a manifest with any other field. Recordings made before 2026-10-26
+also have `start_url`; replay ignores it, the audit lets it pass, and the next import of the
+task drops it. Replay opens the first page opened while recording unless given `--url`.
 
 Rules and compute rules are not part of the published bundle; they live next to it in the task
 directory, so they can be reviewed and changed without touching the recording.
