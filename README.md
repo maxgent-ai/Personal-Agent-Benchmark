@@ -96,6 +96,7 @@ for evaluating agents. To have content removed, open an issue.
 - [docs/tasks.md](docs/tasks.md): task directory, task card, how a task is added
 - [docs/bundle-format.md](docs/bundle-format.md): what is inside `bundle.tar.gz`
 - [docs/site-rules.md](docs/site-rules.md): request matching and site rules
+- [docs/grading.md](docs/grading.md): how answers to a task are scored
 - [docs/deploy.md](docs/deploy.md): replay service image, Pod, NetworkPolicy
 
 ## License

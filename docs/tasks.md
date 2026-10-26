@@ -7,6 +7,7 @@ tasks/<id>/
   task.yaml          the task card
   bundle.tar.gz      the recording (bundle.tar.gz.000, .001, ... when larger than 45 MB)
   bundle.json        the recordings merged into bundle.tar.gz (time ranges), written on import
+  grading.yaml       how answers are scored (docs/grading.md)
   rules/             site rules for this task
     <site>.auto.yaml   inferred from the recording; regenerated on every import, do not edit
     <site>.yaml        written by people; corrections and additions

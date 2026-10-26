@@ -11,6 +11,7 @@ import { PACKAGE_ROOT } from './paths';
  *   bundle.json      the recordings merged into it (time ranges), written on import
  *   rules/           site rules for this task: <site>.auto.yaml inferred from the recording,
  *                    <site>.yaml written by people (wins over auto and over sites/)
+ *   grading.yaml     how answers to the task are scored (docs/grading.md)
  */
 export interface TaskCard {
   id: string;
@@ -67,6 +68,8 @@ export class Task {
   /** bundle.json: the recordings merged into bundle.tar.gz, written on import. */
   get summaryPath(): string { return path.join(this.dir, 'bundle.json'); }
   get rulesDir(): string { return path.join(this.dir, 'rules'); }
+  /** grading.yaml: how answers are scored (see grading.ts). */
+  get gradingPath(): string { return path.join(this.dir, 'grading.yaml'); }
 
   card(): TaskCard {
     const card = YAML.parse(fs.readFileSync(this.cardPath, 'utf8')) as TaskCard;
