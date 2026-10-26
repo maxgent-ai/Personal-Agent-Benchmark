@@ -1,0 +1,10 @@
+# Found by replaying this task: these values differed between recording and replay without changing
+# the content. Regenerated on every ingest; do not edit.
+site: attn.tv
+hosts:
+  - attn.tv
+  - "*.attn.tv"
+drop_params:
+  - attn_vid
+  - id
+  - ses

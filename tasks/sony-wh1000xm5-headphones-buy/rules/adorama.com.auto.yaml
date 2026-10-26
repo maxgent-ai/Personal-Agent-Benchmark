@@ -1,0 +1,12 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "adorama.com", which takes precedence.
+site: adorama.com
+hosts:
+  - adorama.com
+  - "*.adorama.com"
+drop_params:
+  - _p
+  - _s
+  - cid
+  - en
+  - sid

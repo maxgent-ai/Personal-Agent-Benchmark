@@ -1,0 +1,18 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "affirm.com", which takes precedence.
+site: affirm.com
+hosts:
+  - affirm.com
+  - "*.affirm.com"
+drop_params:
+  - ec
+  - t
+body_drop:
+  - timestamp
+  - lcut
+  - receivedAt
+  - time
+  - received_at
+block:
+  - www.affirm.com/api/chrono/v3/collect*
+  - www.affirm.com/api/axp/v4/assignments/impressions*

@@ -1,0 +1,150 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "amazon.sg", which takes precedence.
+site: amazon.sg
+hosts:
+  - amazon.sg
+  - "*.amazon.sg"
+drop_params:
+  - page-type
+  - pageType
+  - pd_rd_r
+  - pf_rd_p
+  - pf_rd_r
+  - qid
+  - rid
+  - rshVal
+  - rx
+  - stamp
+  - _
+body_drop:
+  - t
+  - pageVisible
+  - ue
+  - bodyBegin
+  - ns
+  - ne
+  - criticalFeature
+  - aboveTheFold
+  - functional
+  - timeToInteractive
+  - bodyEnd
+  - firstPaint
+  - firstContentfulPaint
+  - pc
+  - tc
+  - na_
+  - ul_
+  - _ul
+  - rd_
+  - _rd
+  - fe_
+  - lk_
+  - _lk
+  - co_
+  - _co
+  - sc_
+  - rq_
+  - rs_
+  - _rs
+  - dl_
+  - di_
+  - de_
+  - _de
+  - _dc
+  - ld_
+  - _ld
+  - ntd
+  - ty
+  - rc
+  - hob
+  - hoe
+  - loaded
+  - navigationStart
+  - fetchStart
+  - domainLookupStart
+  - domainLookupEnd
+  - connectStart
+  - connectEnd
+  - secureConnectionStart
+  - requestStart
+  - responseStart
+  - responseEnd
+  - domLoading
+  - domInteractive
+  - domContentLoadedEventStart
+  - domContentLoadedEventEnd
+  - domComplete
+  - loadEventStart
+  - vlDbgCalcStart
+  - vlDbgBufStart
+  - vlDbgQueStartMutInt
+  - vlDbgQueStartMut
+  - vlDbgQueStartTxt
+  - vlDbgQueStartImg
+  - vlDbgQueStartVid
+  - vlDbgQueStartIntEl
+  - vlDbgQueStartVpUpd
+  - visuallyLoaded10
+  - visuallyLoaded20
+  - visuallyLoaded30
+  - visuallyLoaded40
+  - visuallyLoaded50
+  - vl50
+  - at
+  - visuallyLoaded60
+  - visuallyLoaded70
+  - visuallyLoaded80
+  - visuallyLoaded90
+  - vl90
+  - visuallyLoaded100
+  - vl100
+  - atfSpeedIndex
+  - speedIndex
+  - visuallyLoaded0
+  - vlDbgCalcEnd
+  - largestContentfulPaint
+  - lcp
+  - largestContentfulPaint.render
+  - largestContentfulPaint.load
+  - collectionStartTime
+  - cumulativeLayoutShiftLastTimestamp
+  - timestamp
+  - s-on-search-route
+  - unloadEventStart
+  - unloadEventEnd
+  - ul
+block:
+  - www.amazon.sg/rd/uedata*
+  - www.amazon.sg/prime-ajax/acquisition/metrics*
+  - unagi.amazon.sg/1/events/com.amazon.csm.csa.prod*
+  - unagi.amazon.sg/1/events/com.amazon.csm.customsg.prod*
+  - unagi.amazon.sg/1/events/com.amazon.csm.nexusclient.prod*
+  - unagi.amazon.sg/1/events/com.amazon.Edglnk.fe.prod.clientmetrics*
+  - unagi.amazon.sg/1/events/com.amazon.eel.SearchAutocompleteUIServiceMetrics.nexus*
+  - fls-fe.amazon.sg
+endpoints:
+  - name: auto_page_1
+    match: GET /*/dp/{id}/**
+    host: www.amazon.sg
+    key: /dp/{id}
+    keep_params: []
+  - name: auto_page_2
+    match: GET /dp/{id}/**
+    host: www.amazon.sg
+    key: /dp/{id}
+    keep_params: []
+  - name: auto_suggest_1
+    match: GET /suggestions
+    host: www.amazon.sg
+    kind: search
+    text_param: prefix
+    keep_params:
+      - prefix
+    similarity: 0.3
+  - name: auto_search_2
+    match: GET /s
+    host: www.amazon.sg
+    kind: search
+    text_param: k
+    keep_params:
+      - k

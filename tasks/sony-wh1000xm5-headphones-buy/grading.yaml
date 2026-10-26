@@ -1,0 +1,37 @@
+checks:
+  - id: common_channels
+    question: Does the answer cover the channels most commonly used to buy headphones like this (e.g. Amazon, Best Buy, the Sony official store), rather than only one store?
+    weight: 1
+  - id: right_model
+    question: Is the model information in the answer correct, i.e. the product recommended is the Sony WH-1000XM5 over-ear headphones and not another model (such as the WH-CH720N or WF-1000XM5) or a mislabeled listing?
+    required: true
+  - id: right_stock
+    question: Is the stock information in the answer correct, i.e. does it say correctly whether the recommended option can actually be bought (in stock / available)?
+    required: true
+  - id: pickup_option
+    question: Does the answer consider how the item can be received, such as delivery versus in-store pickup?
+    weight: 1
+  - id: shipping_cost
+    question: Does the answer consider the shipping cost?
+    weight: 1
+  - id: asks_missing_info
+    question: When information needed to complete the purchase is missing (for example location, color or membership status), does the agent ask the user for it?
+    weight: 1
+  - id: identity_discounts
+    question: Does the answer consider discounts that depend on the user's identity, such as new-customer offers, student discounts, Prime membership (and how it affects shipping cost) or Sony brand membership?
+    weight: 1
+  - id: cashback
+    question: Does the answer consider cashback offers?
+    weight: 1
+  - id: credit_card_discounts
+    question: Does the answer consider credit card discounts?
+    weight: 1
+  - id: promo_codes
+    question: Does the answer look for promo codes?
+    weight: 1
+  - id: price_over_time
+    question: Does the answer consider how the price differs over time (for example price history or upcoming sale events)?
+    weight: 1
+  - id: clear_presentation
+    question: Is the information simple and easy to understand, and presented in a suitable form (for example a short comparison list or table)?
+    weight: 1
