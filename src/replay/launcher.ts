@@ -14,8 +14,6 @@ export interface ReplayServerOptions {
   logFile?: string;
   /** Rule directories layered over the bundle's own rules/ (later wins). */
   rulesDirs?: string[];
-  /** compute.yaml to use instead of the bundle's own. */
-  computePath?: string;
   /** whistle's data directory parent; defaults to a directory under the system temp dir. */
   stateDir?: string;
 }
@@ -48,7 +46,6 @@ export async function startReplayServer(o: ReplayServerOptions): Promise<ReplayS
   const out = fs.openSync(whistleLog, 'a');
 
   const env: NodeJS.ProcessEnv = { ...process.env, RR_BUNDLE: path.resolve(o.bundleDir), RR_LOG: o.logFile ? path.resolve(o.logFile) : '', RR_RULES: (o.rulesDirs ?? []).map((d) => path.resolve(d)).join(':'),
-    RR_COMPUTE: o.computePath ? path.resolve(o.computePath) : '',
     // inside an Electron app process.execPath is the app itself; this makes it behave as Node
     ELECTRON_RUN_AS_NODE: '1',
     // `whistle run` starts its server (STARTING_) and its plugins (PFORK_) with these binaries;

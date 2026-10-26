@@ -13,11 +13,12 @@ const DEFAULT_FUZZY_MIN = 0.5;
 
 /**
  * The lookup ladder: exact key, then free-text (search / promo), then same-path fuzzy.
- * When a key was recorded several times, the earliest recording wins ("browse first, act later").
+ * When a key was recorded several times, the earliest recording wins ("browse first, act later"),
+ * except for pages that follow what was done (carts, `latest` in the rules): there the last does.
  */
 export function lookup(store: RecordStore, norm: NormalizedRequest): LookupResult | undefined {
   const exact = store.byKey.get(norm.key);
-  if (exact && exact.length) return { source: 'exact', ix: exact[0] };
+  if (exact && exact.length) return { source: 'exact', ix: norm.latest ? exact[exact.length - 1] : exact[0] };
 
   const sameEndpoint = (store.byPathKey.get(norm.pathKey) ?? []).filter((ix) => ix.entry.status !== 0);
 
@@ -40,7 +41,8 @@ export function lookup(store: RecordStore, norm: NormalizedRequest): LookupResul
   if (!fuzzyAllowed || sameEndpoint.length === 0) return undefined;
   const min = norm.endpoint?.fuzzy_min ?? (norm.kind === 'static' ? 0 : DEFAULT_FUZZY_MIN);
   let best: { ix: IndexedEntry; score: number } | undefined;
-  for (const ix of sameEndpoint) {
+  // among equally good matches the first one tried wins
+  for (const ix of norm.latest ? [...sameEndpoint].reverse() : sameEndpoint) {
     const score = paramOverlap(norm.params, ix.norm.params);
     if (score < min) continue;
     if (!best || score > best.score) best = { ix, score };

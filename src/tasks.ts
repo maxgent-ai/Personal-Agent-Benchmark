@@ -11,7 +11,6 @@ import { PACKAGE_ROOT } from './paths';
  *   bundle.json      the recordings merged into it (time ranges), written on import
  *   rules/           site rules for this task: <site>.auto.yaml inferred from the recording,
  *                    <site>.yaml written by people (wins over auto and over sites/)
- *   compute.yaml     cart and checkout computation, when the task needs one
  */
 export interface TaskCard {
   id: string;
@@ -22,14 +21,12 @@ export interface TaskCard {
   capture?: { locale?: string; timezone?: string };
 }
 
-/** Everything a replay needs: the recording, the rules layered over it, and the compute rules. */
+/** Everything a replay needs: the recording and the rules layered over it. */
 export interface ReplayTarget {
   name: string;
   bundleDir: string;
   /** Rule directories layered over the bundle's own rules/ (later wins). */
   rulesDirs: string[];
-  /** compute.yaml replacing the bundle's own; undefined uses the bundle's. */
-  computePath?: string;
   task?: Task;
 }
 
@@ -70,7 +67,6 @@ export class Task {
   /** bundle.json: the recordings merged into bundle.tar.gz, written on import. */
   get summaryPath(): string { return path.join(this.dir, 'bundle.json'); }
   get rulesDir(): string { return path.join(this.dir, 'rules'); }
-  get computePath(): string { return path.join(this.dir, 'compute.yaml'); }
 
   card(): TaskCard {
     const card = YAML.parse(fs.readFileSync(this.cardPath, 'utf8')) as TaskCard;
@@ -113,7 +109,6 @@ export class Task {
       name: this.id,
       bundleDir: await this.bundleDir(),
       rulesDirs: [this.repo.sitesDir, this.rulesDir],
-      computePath: this.computePath,
       task: this,
     };
   }
@@ -121,7 +116,7 @@ export class Task {
 
 /**
  * Resolves a command-line argument to a replay target: a task id, a task directory, or a bundle
- * directory (one with manifest.json, replayed with its own rules/ and compute/).
+ * directory (one with manifest.json, replayed with its own rules/).
  */
 export async function resolveTarget(arg: string, repo = Repo.default()): Promise<ReplayTarget> {
   const asPath = path.resolve(arg);

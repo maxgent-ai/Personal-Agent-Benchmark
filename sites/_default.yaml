@@ -27,6 +27,15 @@ body_drop:
   - "*session*"
 exclude:
   - "*/errors/validateCaptcha*"
+# Pages that show what was done before them (cart, checkout): replay answers them with the last
+# recording, which is where the task left them, instead of the first.
+latest:
+  - "*/cart*"
+  - "*/basket*"
+  - "*/bag"
+  - "*/bag/*"
+  - "*/trolley*"
+  - "*/checkout*"
 block:
   - "*.google-analytics.com"
   - "*.googletagmanager.com"

@@ -4,7 +4,6 @@ import * as path from 'node:path';
 import { launchBrowser } from './browser';
 import { auditBundle } from './core/audit';
 import { Bundle } from './core/bundle';
-import { ComputeModule } from './core/compute/module';
 import { lookup } from './core/lookup';
 import { normalizeRequest } from './core/normalize';
 import { RuleSet } from './core/rules';
@@ -22,7 +21,6 @@ const HELP = `pab - Personal Agent Benchmark: replay real-site tasks offline
   pab serve <task> [--port 8899] [--host 127.0.0.1] [--log FILE]
                                              replay proxy only (containers, external browsers)
   pab inspect <task> <url> [--method GET]    normalized key of a request and the recording it hits
-  pab compute-check <task>                   recompute recorded cart totals with compute.yaml
   pab audit [<task>...]                      check recordings are safe to publish (all tasks by default)
   pab unpack <task>                          unpack the recording and print its directory
   pab stats <replay-log.jsonl>               summarize a replay log
@@ -74,8 +72,6 @@ export async function main(argv: string[]): Promise<void> {
       return cmdServe(positional, flags);
     case 'inspect':
       return cmdInspect(positional, flags);
-    case 'compute-check':
-      return cmdComputeCheck(positional, flags);
     case 'audit':
       return cmdAudit(positional, flags);
     case 'unpack': {
@@ -101,13 +97,12 @@ function cmdList(flags: Args['flags']): void {
   }
 }
 
-/** Rules and compute module of a target, as the replay engine loads them. */
-export function loadTarget(target: ReplayTarget): { bundle: Bundle; rules: RuleSet; store: RecordStore; compute?: ComputeModule } {
+/** Rules and recordings of a target, as the replay engine loads them. */
+export function loadTarget(target: ReplayTarget): { bundle: Bundle; rules: RuleSet; store: RecordStore } {
   const bundle = new Bundle(target.bundleDir);
   const rules = RuleSet.load([bundle.rulesDir, ...target.rulesDirs]);
   const store = new RecordStore(bundle, rules);
-  const compute = ComputeModule.load(store, target.computePath ?? bundle.computePath);
-  return { bundle, rules, store, compute };
+  return { bundle, rules, store };
 }
 
 async function cmdReplay(positional: string[], flags: Args['flags']): Promise<void> {
@@ -119,7 +114,7 @@ async function cmdReplay(positional: string[], flags: Args['flags']): Promise<vo
   const manifest = bundle.manifest();
   const port = num(flags.port, 18899);
   const logFile = str(flags.log) ?? path.join(repo.cacheDir, 'logs', `replay-${target.name}-${Date.now()}.jsonl`);
-  const server = await startReplayServer({ bundleDir: target.bundleDir, rulesDirs: target.rulesDirs, computePath: target.computePath, port, logFile });
+  const server = await startReplayServer({ bundleDir: target.bundleDir, rulesDirs: target.rulesDirs, port, logFile });
   console.log(`replay proxy: ${server.proxy} (${target.name}, recorded ${manifest.captured_from})`);
   console.log(`request log: ${logFile}`);
   const stop = async () => {
@@ -168,7 +163,6 @@ async function cmdServe(positional: string[], flags: Args['flags']): Promise<voi
   const server = await startReplayServer({
     bundleDir: target.bundleDir,
     rulesDirs: target.rulesDirs,
-    computePath: target.computePath,
     port: num(flags.port, 8899),
     host,
     logFile: str(flags.log),
@@ -189,21 +183,6 @@ async function cmdInspect(positional: string[], flags: Args['flags']): Promise<v
   const norm = normalizeRequest({ method: str(flags.method) ?? 'GET', url }, rules);
   const found = lookup(store, norm);
   console.log(JSON.stringify({ key: norm.key, kind: norm.kind, endpoint: norm.endpoint?.name, site: norm.site?.site, text: norm.text, match: found ? { source: found.source, entry: found.ix.entry.id, url: found.ix.entry.url, detail: found.detail } : null }, null, 2));
-}
-
-async function cmdComputeCheck(positional: string[], flags: Args['flags']): Promise<void> {
-  const [arg] = positional;
-  if (!arg) throw new Error('usage: pab compute-check <task>');
-  const target = await resolveTarget(arg, repoOf(flags));
-  const { compute } = loadTarget(target);
-  if (!compute) throw new Error(`${target.name} has no compute rules`);
-  const results = await compute.checkSamples();
-  for (const r of results) {
-    console.log(`${r.ok ? 'PASS' : 'FAIL'}  ${r.name}${r.error ? '  ' + r.error : ''}`);
-    for (const c of r.checks) console.log(`      ${c.ok ? 'ok ' : 'BAD'} ${c.field}: expected ${c.expected} (${c.source}), computed ${c.computed}`);
-  }
-  if (!results.length) console.log('compute.yaml has no samples');
-  if (results.some((r) => !r.ok)) process.exitCode = 1;
 }
 
 async function cmdAudit(positional: string[], flags: Args['flags']): Promise<void> {

@@ -10,7 +10,6 @@ tasks/<id>/
   rules/             site rules for this task
     <site>.auto.yaml   inferred from the recording; regenerated on every import, do not edit
     <site>.yaml        written by people; corrections and additions
-  compute.yaml       cart and checkout computation (only for tasks that need it)
 ```
 
 ## task.yaml
@@ -42,22 +41,23 @@ that helps every task on the site goes into `sites/<site>.yaml`. See [site-rules
 Recordings are made with the maintainers' recording tool, which is not part of this repository.
 The steps are:
 
-1. A maintainer writes `tasks/<id>/task.yaml`, including `capture.guide`.
+1. A maintainer writes `tasks/<id>/task.yaml`, or the person recording adds the task in the
+   recording tool, which hands the card over with the recording.
 2. A person records the task: browse first (searches in several wordings, product pages, policy
-   pages), then act (add to cart, change quantity, try a code). Bot checks are completed by that
+   pages), then do once what the task asks of the cart, ending in the state it asks for (replay
+   answers cart pages with their last recording). Bot checks are completed by that
    person, never by a script; orders are never placed. The tool packs the recording, removes
    cookies, credentials and listed personal data, infers site rules, and replays every recorded
    page once to measure hit rates.
 3. A maintainer imports the recording. The import refuses recordings that fail `pab audit`,
    writes `bundle.tar.gz`, `bundle.json` and `rules/*.auto.yaml`, and leaves hand-written files
    alone. Tasks are recorded signed out, so page text is not scanned for personal data.
-4. The maintainer replays the task (`pab replay <id>`), adds `compute.yaml` if the task reaches a
-   cart or checkout ([compute.md](compute.md)), fixes misses with rules, and opens a pull request.
+4. The maintainer replays the task (`pab replay <id>`), fixes misses with rules, and opens a pull
+   request.
 
 Recording a task again adds to it: the new recording is merged into `bundle.tar.gz`, requests
 recorded both times keep answering with the earlier copy, and the `*.auto.yaml` files are
-inferred again from both. The import can instead prefer the new copies or replace the recording.
-Prices and pages change over time, so the import re-checks `compute.yaml` samples
-(`pab compute-check <id>`).
+inferred again from both; cart pages answer with the new recording, the last one. The import can
+instead prefer the new copies or replace the recording.
 
 To propose a task, open an issue with the instruction and the sites involved.

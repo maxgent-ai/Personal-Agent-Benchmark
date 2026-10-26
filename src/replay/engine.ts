@@ -1,7 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { Bundle } from '../core/bundle';
-import { ComputeModule } from '../core/compute/module';
 import { lookup } from '../core/lookup';
 import { normalizeRequest, type NormalizedRequest, type RequestInput } from '../core/normalize';
 import { RuleSet } from '../core/rules';
@@ -16,8 +15,6 @@ export interface EngineOptions {
   logFile?: string;
   /** Extra rule directories layered over the bundle's own rules (later wins). */
   rulesDirs?: string[];
-  /** compute.yaml replacing the bundle's own compute/compute.yaml. */
-  computePath?: string;
   /** "recorded" (default) shifts page clocks to the recording time; "off" leaves them alone. */
   clock?: 'recorded' | 'off';
 }
@@ -40,7 +37,6 @@ export class ReplayEngine {
   readonly bundle: Bundle;
   readonly rules: RuleSet;
   readonly store: RecordStore;
-  readonly compute?: ComputeModule;
   readonly manifest: Manifest;
   private stats: ReplayStats = emptyStats();
   private readonly logFile?: string;
@@ -52,7 +48,6 @@ export class ReplayEngine {
     this.manifest = this.bundle.manifest();
     this.rules = RuleSet.load([this.bundle.rulesDir, ...(opts.rulesDirs ?? [])]);
     this.store = new RecordStore(this.bundle, this.rules);
-    this.compute = ComputeModule.load(this.store, opts.computePath ?? this.bundle.computePath);
     this.logFile = opts.logFile;
     if ((opts.clock ?? 'recorded') === 'recorded') this.clockMs = Date.parse(this.manifest.captured_from);
     if (this.logFile) fs.mkdirSync(path.dirname(this.logFile), { recursive: true });
@@ -64,7 +59,6 @@ export class ReplayEngine {
 
   reset(): void {
     this.stats = emptyStats();
-    this.compute?.reset();
   }
 
   async handle(req: ReplayRequest): Promise<ReplayResponse> {
@@ -90,9 +84,6 @@ export class ReplayEngine {
     }
 
     let resp = result.resp;
-    if (this.compute && resourceClass === 'document' && result.source !== 'computed' && result.source !== 'miss') {
-      resp = this.compute.decorate(norm, resp);
-    }
     if (this.clockMs !== undefined && resourceClass === 'document' && mimeOf(resp.headers) === 'text/html' && method !== 'HEAD') {
       const shifted = injectClock(resp.body.toString('utf8'), resp.headers, this.clockMs);
       resp = { ...resp, headers: shifted.headers, body: Buffer.from(shifted.html, 'utf8') };
@@ -122,25 +113,6 @@ export class ReplayEngine {
     resourceClass: ResourceClass,
   ): Promise<{ resp: StoredResponse; source: Source; entryId?: string; detail?: string }> {
     if (norm.kind === 'block') return { resp: empty(204), source: 'blocked' };
-
-    if (this.compute) {
-      const op = this.compute.opFor(norm);
-      if (op) {
-        const detail = this.compute.apply(op, input, norm);
-        if (op.respond === 'view' && op.view) {
-          const view = this.compute.view(op.view);
-          if (view) return { resp: await this.compute.render(view), source: 'computed', detail };
-        }
-        // The cart semantics live in the compute module, so any recording of this endpoint
-        // (e.g. the redirect after add-to-cart) is a valid answer even if the body differs.
-        const found = lookup(this.store, norm);
-        const ix = found?.ix ?? (this.store.byPathKey.get(norm.pathKey) ?? [])[0];
-        if (ix) return { resp: await this.store.response(ix), source: 'computed', entryId: ix.entry.id, detail: `${detail}; ${found?.source ?? 'same-endpoint'}` };
-        return { resp: jsonResponse(200, {}), source: 'computed', detail: `${detail}; no recorded response` };
-      }
-      const view = this.compute.viewFor(norm);
-      if (view) return { resp: await this.compute.render(view), source: 'computed', detail: view.name };
-    }
 
     const found = lookup(this.store, norm);
     if (found) return { resp: await this.store.response(found.ix), source: found.source, entryId: found.ix.entry.id, detail: found.detail };
@@ -191,7 +163,7 @@ export class ReplayEngine {
     let body: unknown;
     switch (url.pathname) {
       case '/health':
-        body = { ok: true, task: this.manifest.task_id, entries: this.store.all.length, compute: !!this.compute, captured_from: this.manifest.captured_from };
+        body = { ok: true, task: this.manifest.task_id, entries: this.store.all.length, captured_from: this.manifest.captured_from };
         break;
       case '/stats':
         body = this.getStats();
@@ -199,9 +171,6 @@ export class ReplayEngine {
       case '/reset':
         this.reset();
         body = { ok: true };
-        break;
-      case '/state':
-        body = this.compute ? { state: this.compute.state, totals: this.compute.totals() } : { state: null };
         break;
       default:
         body = { error: 'unknown control path' };

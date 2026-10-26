@@ -10,7 +10,6 @@ import { ReplayEngine } from './engine';
  *   RR_BUNDLE   bundle directory (required)
  *   RR_LOG      JSONL request log (optional)
  *   RR_RULES    extra rule directories, separated by ":" (optional)
- *   RR_COMPUTE  compute.yaml replacing the bundle's own (optional)
  *   RR_CLOCK    "off" to leave page clocks alone (default: shift them to the recording time)
  */
 interface WhistleRequest extends IncomingMessage {
@@ -28,7 +27,6 @@ function engine(): Promise<ReplayEngine> {
       const e = new ReplayEngine(bundle, {
         logFile: process.env.RR_LOG || undefined,
         rulesDirs: (process.env.RR_RULES ?? '').split(':').filter(Boolean),
-        computePath: process.env.RR_COMPUTE || undefined,
         clock: process.env.RR_CLOCK === 'off' ? 'off' : 'recorded',
       });
       await e.warmUp();

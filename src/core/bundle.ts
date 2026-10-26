@@ -6,7 +6,7 @@ import { readJson, readJsonl } from './util';
 /**
  * A recording bundle on disk. One recording, one directory:
  *   manifest.json, archive/data.warc, indexes/entries.jsonl, pages/pages.jsonl;
- *   optionally rules/*.yaml and compute/compute.yaml.
+ *   optionally rules/*.yaml.
  * The recorder also keeps working files next to them (raw/, review/, check/, report.json);
  * those never leave the recording machine.
  */
@@ -23,7 +23,6 @@ export class Bundle {
   get entriesPath(): string { return path.join(this.dir, 'indexes', 'entries.jsonl'); }
   get pagesPath(): string { return path.join(this.dir, 'pages', 'pages.jsonl'); }
   get rulesDir(): string { return path.join(this.dir, 'rules'); }
-  get computePath(): string { return path.join(this.dir, 'compute', 'compute.yaml'); }
   get reviewDir(): string { return path.join(this.dir, 'review'); }
   get rawDir(): string { return path.join(this.dir, 'raw'); }
   get checkDir(): string { return path.join(this.dir, 'check'); }

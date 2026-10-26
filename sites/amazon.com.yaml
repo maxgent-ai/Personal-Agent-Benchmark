@@ -1,4 +1,4 @@
-# Amazon (US). Endpoint names are referenced by compute.yaml in a bundle.
+# Amazon (US).
 site: amazon
 hosts:
   - "amazon.com"
@@ -94,8 +94,8 @@ endpoints:
     kind: search
     text_param: prefix
     similarity: 0.3
-  # Cart: add and quantity changes update the replay's cart state; the cart page is computed
-  # (compute/compute.yaml in the bundle).
+  # Cart: only what was done while recording replays; another item or quantity misses. Cart
+  # pages answer with their last recording (latest in _default.yaml).
   - name: add_to_cart
     match: "POST /cart/add-to-cart/**"
     kind: stateful
@@ -104,9 +104,6 @@ endpoints:
     match: "POST /cart/ref=ox_sc_update_quantity*"
     kind: stateful
     body_keep: [asin, actionType]
-  - name: cart_view
-    match: "GET /gp/cart/view.html"
-    kind: computed
   # Page components fetched by JS. Bodies carry the session id from cookies, which the
   # bundle stores redacted, so match on the fields that select the content.
   - name: cross_border_interstitial

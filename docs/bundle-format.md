@@ -42,7 +42,7 @@ counts. `pab audit` fails a manifest with any other field. Recordings made befor
 also have `start_url`; replay ignores it, the audit lets it pass, and the next import of the
 task drops it. Replay opens the first page opened while recording unless given `--url`.
 
-Rules and compute rules are not part of the published bundle; they live next to it in the task
+Rules are not part of the published bundle; they live next to it in the task
 directory, so they can be reviewed and changed without touching the recording.
 
 ## Archive

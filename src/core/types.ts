@@ -40,7 +40,7 @@ export interface Entry {
   revisitOf?: string;
 }
 
-export type Kind = 'browse' | 'search' | 'promo' | 'stateful' | 'computed' | 'block' | 'static';
+export type Kind = 'browse' | 'search' | 'promo' | 'stateful' | 'block' | 'static';
 
 export interface EndpointRule {
   name: string;
@@ -75,6 +75,11 @@ export interface SiteRules {
   block?: string[];
   /** Never stored: bot checks and other pages that must not be replayed ("host/path" globs). */
   exclude?: string[];
+  /**
+   * Pages whose content follows what was done before them, such as the cart ("host/path" globs):
+   * replay answers them with the last recording instead of the first.
+   */
+  latest?: string[];
   endpoints?: EndpointRule[];
   /** URL of this site's own 404 page recorded during capture. */
   not_found?: string;
@@ -108,7 +113,6 @@ export type Source =
   | 'fuzzy'
   | 'search'
   | 'promo'
-  | 'computed'
   | 'blocked'
   | 'preflight'
   | 'control'

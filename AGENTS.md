@@ -4,9 +4,9 @@ Real-site tasks for personal agents, replayed offline from network recordings th
 
 ## Layout
 
-- `tasks/<id>/` one task: `task.yaml`, `bundle.tar.gz` (recording), `bundle.json`, `rules/`, `compute.yaml`. Format: `docs/tasks.md`.
+- `tasks/<id>/` one task: `task.yaml`, `bundle.tar.gz` (recording), `bundle.json`, `rules/`. Format: `docs/tasks.md`.
 - `sites/` site rules shared by all tasks; `_default.yaml` applies to every site.
-- `src/core/` bundle format (`bundle.ts`, `writer.ts`, `warc.ts`, `archive.ts`), request normalization (`normalize.ts`), site rules (`rules.ts`), index (`store.ts`), lookup ladder (`lookup.ts`), compute module (`compute/`), publish audit (`audit.ts`).
+- `src/core/` bundle format (`bundle.ts`, `writer.ts`, `warc.ts`, `archive.ts`), request normalization (`normalize.ts`), site rules (`rules.ts`), index (`store.ts`), lookup ladder (`lookup.ts`), publish audit (`audit.ts`).
 - `src/replay/` replay engine, whistle plugin entry, whistle launcher, page clock.
 - `src/tasks.ts` task resolution and unpacking; `src/cli.ts` the `pab` command.
 - `plugins/whistle.bench-replay/` thin plugin package loading `dist/src/replay/whistle-plugin.js`.

@@ -27,6 +27,8 @@ export interface NormalizedRequest {
   captures: Record<string, string>;
   /** Normalized free text for search and promo endpoints. */
   text?: string;
+  /** Answer with the last recording of this request rather than the first (carts). */
+  latest: boolean;
 }
 
 const STATIC_EXT = /\.(js|mjs|css|png|jpe?g|gif|webp|avif|svg|ico|woff2?|ttf|otf|eot|mp4|webm|mp3|wav|map)$/i;
@@ -82,7 +84,8 @@ export function normalizeRequest(input: RequestInput, rules: RuleSet): Normalize
   const query = params.map(([k, v]) => `${k}=${v}`).join('&');
   const pathKey = `${method} ${host}${path}`;
   const key = pathKey + (query ? '?' + query : '') + (bodyKey ? ' #body:' + bodyKey : '');
-  return { method, host, path, params, bodyKey, key, pathKey, kind, site, endpoint, captures, text };
+  const latest = rules.prefersLatest(url.hostname.toLowerCase(), pathname, site);
+  return { method, host, path, params, bodyKey, key, pathKey, kind, site, endpoint, captures, text, latest };
 }
 
 function isDefaultPort(url: URL): boolean {

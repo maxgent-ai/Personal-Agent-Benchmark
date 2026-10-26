@@ -78,6 +78,12 @@ export class RuleSet {
     return patterns.some((p) => (p.includes('/') ? globToRegExp(p).test(host + u.pathname) : globToRegExp(p).test(host)));
   }
 
+  /** True for pages answered with their last recording (see SiteRules.latest). */
+  prefersLatest(host: string, pathname: string, site?: SiteRules): boolean {
+    const patterns = [...(this.defaults.latest ?? []), ...(site?.latest ?? [])];
+    return patterns.some((p) => (p.includes('/') ? globToRegExp(p).test(host + pathname) : globToRegExp(p).test(host)));
+  }
+
   matchEndpoint(site: SiteRules | undefined, method: string, host: string, pathname: string): EndpointMatch | undefined {
     for (const endpoint of site?.endpoints ?? []) {
       if (endpoint.host && !globToRegExp(endpoint.host).test(host)) continue;
@@ -106,6 +112,7 @@ function mergeSite(high: SiteRules, low: SiteRules): SiteRules {
     body_drop: union(high.body_drop, low.body_drop),
     block: union(high.block, low.block),
     exclude: union(high.exclude, low.exclude),
+    latest: union(high.latest, low.latest),
     endpoints: [...(high.endpoints ?? []), ...(low.endpoints ?? []).filter((e) => !names.has(e.name))],
   };
 }

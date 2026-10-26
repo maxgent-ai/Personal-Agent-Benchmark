@@ -3,9 +3,6 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { test } from 'node:test';
 import { Bundle } from '../src/core/bundle';
-import { ComputeModule } from '../src/core/compute/module';
-import { computeTotals, formatMoney, parseMoney } from '../src/core/compute/pricing';
-import { renderTemplate } from '../src/core/compute/template';
 import { normalizeRequest } from '../src/core/normalize';
 import { fillTemplate, matchPath, RuleSet } from '../src/core/rules';
 import { RecordStore } from '../src/core/store';
@@ -54,31 +51,6 @@ test('amazon page components match whether page script filled in page-type or no
     ).key;
   assert.equal(widget('undefined'), widget('Detail'));
   assert.notEqual(widget('Detail'), normalizeRequest({ method: 'POST', url: 'https://www.amazon.com/acp/apple-brand-showcase/apple-brand-showcase-5aef1594-1792731058544/getAjaxContentHTML?page-type=Detail', contentType: 'application/json', body: Buffer.from('{"asin":"B0OTHER000"}') }, rules).key, 'the body still selects the content');
-});
-
-test('pricing: discounts, free-shipping threshold and tax rounding in cents', () => {
-  const rules = {
-    items: { A: { price: 19.99 }, B: { price: 5 } },
-    tax: { rate: 0.08875 },
-    shipping: { fee: 5.99, free_threshold: 35 },
-    promotions: [
-      { code: 'SAVE10', type: 'percent' as const, value: 10, min_subtotal: 50, group: 'g' },
-      { code: 'FIVE', type: 'amount' as const, value: 5, group: 'g' },
-    ],
-  };
-  const t1 = computeTotals({ lines: [{ item: 'A', qty: 1 }], codes: [] }, rules);
-  assert.deepEqual([t1.subtotal, t1.shipping, t1.tax, t1.total], [19.99, 5.99, 1.77, 27.75]);
-  const t2 = computeTotals({ lines: [{ item: 'A', qty: 3 }], codes: ['save10', 'FIVE'] }, rules);
-  assert.equal(t2.subtotal, 59.97);
-  assert.equal(t2.discount, 6, 'only the larger discount of a group applies');
-  assert.equal(t2.shipping, 0);
-  assert.equal(t2.total, Number((53.97 + Math.round(5397 * 0.08875) / 100).toFixed(2)));
-  const t3 = computeTotals({ lines: [{ item: 'Z', qty: 1 }], codes: [] }, rules);
-  assert.deepEqual(t3.unknownItems, ['Z']);
-  assert.equal(formatMoney(1234.5), '$1,234.50');
-  assert.equal(parseMoney(' $1,234.50 '), 1234.5);
-  assert.equal(renderTemplate('{{plural count "item" "items"}}: {{money subtotal}} / {{line.qty}}', { count: 2, subtotal: 3, line: { qty: 2 } }), 'items: $3.00 / 2');
-  assert.equal(renderTemplate('{{money_sub subtotal 50}} / {{money_sub small 50}}', { subtotal: 597, small: 20 }), '$547.00 / $0.00');
 });
 
 test('hand-written rules win over inferred ones from any directory; later directories win among equals', () => {
@@ -153,22 +125,16 @@ test('replay engine walks the lookup ladder and never needs the network', async 
   assert.equal(promo.source, 'promo');
   assert.ok(promo.body.toString().includes('not a valid code'));
 
-  const add = await engine.handle({
-    method: 'POST',
-    url: 'https://shop.test/cart/add',
-    headers: { 'content-type': 'application/x-www-form-urlencoded' },
-    body: Buffer.from('ASIN=B0TEST&quantity=2&csrfToken=new'),
-  });
-  assert.equal(add.source, 'computed');
+  // what was recorded replays; anything else misses, with no cart arithmetic behind it
+  const addForm = (body: string) => engine.handle({ method: 'POST', url: 'https://shop.test/cart/add', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: Buffer.from(body) });
+  assert.equal((await addForm('ASIN=B0TEST&quantity=1&csrfToken=new')).source, 'exact');
+  const two = await addForm('ASIN=B0TEST&quantity=2&csrfToken=new');
+  assert.equal(two.source, 'miss', 'a quantity that was never recorded');
+  assert.equal((await addForm('ASIN=B0OTHER&quantity=1')).source, 'miss', 'an item that was never added');
   const cart = await get('https://shop.test/cart');
-  assert.equal(cart.source, 'computed');
-  const html = cart.body.toString();
-  assert.ok(html.includes('<span id="subtotal">$398.00</span>'), html);
-  assert.ok(html.includes('<span class="qty">2</span>'));
+  assert.equal(cart.source, 'exact');
+  assert.ok(cart.body.toString().includes('<span id="subtotal">$199.00</span>'), 'the cart is answered with its last recording, not the empty one');
   assert.equal(Number(cart.headers.find(([k]) => k === 'Content-Length')![1]), cart.body.length);
-
-  const again = await get('https://shop.test/');
-  assert.ok(again.body.toString().includes('<span id="nav-cart-count">2</span>'), 'header badge follows replay state');
 
   const options = await engine.handle({ method: 'OPTIONS', url: 'https://shop.test/api/unknown', headers: { origin: 'https://shop.test', 'access-control-request-method': 'POST' } });
   assert.equal(options.source, 'preflight');
@@ -177,13 +143,4 @@ test('replay engine walks the lookup ladder and never needs the network', async 
   assert.equal(JSON.parse(health.body.toString()).ok, true);
   const stats = engine.getStats();
   assert.ok(stats.byClass.xhr.miss >= 1);
-});
-
-test('compute samples recompute recorded totals', async () => {
-  const dir = await buildShopBundle();
-  const bundle = new Bundle(dir);
-  const store = new RecordStore(bundle, RuleSet.load([bundle.rulesDir]));
-  const compute = ComputeModule.load(store, bundle.computePath)!;
-  const [result] = await compute.checkSamples();
-  assert.equal(result.ok, true, JSON.stringify(result));
 });
