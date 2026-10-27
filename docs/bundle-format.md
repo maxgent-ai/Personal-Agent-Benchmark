@@ -1,8 +1,8 @@
 # Bundle format
 
 A bundle is one recording of a task (or several merged into one). It holds only what replay
-reads. In this repository it travels as `tasks/<id>/bundle.tar.gz`, which `pab` unpacks into
-`.cache/bundles/<id>-<hash>/` on first use.
+reads. In this repository it travels as `tasks/<id>/recording/` (the published layout, below),
+which `pab` unpacks into `.cache/bundles/<id>-<hash>/` on first use.
 
 ```text
 manifest.json            the few facts replay needs (below)
@@ -36,6 +36,7 @@ and unpack as before.
 | `captured_to` | with `captured_from`, tells merged recordings apart |
 | `not_found` | each site's own 404 page, answered for documents replay cannot find |
 | `locale`, `timezone` | the replay browser's language and time zone |
+| `format` | layout version of the published recording (below); only in `recording/manifest.json` |
 
 Nothing else is recorded: not who recorded it, where from, with which browser, or request
 counts. `pab audit` fails a manifest with any other field. Recordings made before 2026-10-26
@@ -45,14 +46,36 @@ task drops it. Replay opens the first page opened while recording unless given `
 Rules are not part of the published bundle; they live next to it in the task
 directory, so they can be reviewed and changed without touching the recording.
 
-## Archive
+## Published layout (format 2)
 
-`bundle.tar.gz` is a gzip-compressed tar of the files above, written with fixed timestamps so
-the same files always give the same bytes. WARC records are stored uncompressed inside it: one
-gzip stream over the whole archive compresses far better than per-record gzip (the Amazon task:
-33 MB instead of 39 MB). Archives larger than 45 MB are split into `bundle.tar.gz.000`, `.001`,
-... and read back in order. Extraction accepts only the files listed above (plus the two older
-files), and only regular files.
+```text
+tasks/<id>/recording/
+  manifest.json        the manifest above, plus "format": 2
+  pages.jsonl          pages/pages.jsonl
+  entries.jsonl.gz     indexes/entries.jsonl, gzip-compressed
+  warc.tar.gz          archive/data.warc in a gzip-compressed tar
+                       (warc.tar.gz.000, .001, ... when larger than 45 MB)
+```
+
+The WARC is almost all of a recording (the Sony task: 74 MB of 78 MB) and follows the WARC
+standard, so it is stored apart from the small files whose layout is ours. The tar is written
+with fixed timestamps, so the same WARC always gives the same bytes. WARC records are stored
+uncompressed inside it: one gzip stream over the whole file compresses far better than
+per-record gzip (the Amazon task: 33 MB instead of 39 MB). Archives larger than 45 MB are split
+into numbered parts (GitHub warns above 50 MB and refuses 100 MB) and read back in order.
+Extraction accepts only `archive/data.warc`, and only as a regular file.
+
+### Changing the format
+
+`format` is the contract between this repository and the tool that writes recordings into it.
+Replay reads exactly one format, `RECORDING_FORMAT` in `src/core/archive.ts`, and refuses any
+other with an error naming both. A change to the layout or to the files in it bumps the number,
+and the same change rewrites every task to the new format with a script, so replay never keeps
+readers for old formats. When only the small files change, the rewrite leaves `warc.tar.gz` as
+it was and git stores nothing new for it.
+
+Format 1 was one `bundle.tar.gz` (split the same way) holding all four files; format 2 replaced
+it on 2026-10-26.
 
 ## WARC records
 

@@ -99,6 +99,8 @@ export interface Manifest {
   /** Replay browsers use the recording's language and time zone. */
   locale?: string;
   timezone?: string;
+  /** Layout version of a recording published in a task (RECORDING_FORMAT); absent elsewhere. */
+  format?: number;
 }
 
 export interface StoredResponse {

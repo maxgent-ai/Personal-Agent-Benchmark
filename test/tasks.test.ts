@@ -2,7 +2,7 @@ import * as assert from 'node:assert/strict';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { test } from 'node:test';
-import { createArchive, PUBLIC_BUNDLE_FILES } from '../src/core/archive';
+import { publishRecording } from '../src/core/archive';
 import { auditBundle } from '../src/core/audit';
 import { Bundle } from '../src/core/bundle';
 import { RuleSet } from '../src/core/rules';
@@ -22,7 +22,7 @@ async function shopRepo(): Promise<{ repo: Repo; bundleDir: string }> {
   writeFile(path.join(task, 'task.yaml'), 'id: shop-earbuds\ntitle: Buy earbuds\n');
   // a task-level correction on top of the shared site rules
   writeFile(path.join(task, 'rules', 'shop.yaml'), 'site: shop\nhosts: ["shop.test"]\nblock: ["shop.test/api/offers"]\n');
-  await createArchive(bundleDir, PUBLIC_BUNDLE_FILES, path.join(task, 'bundle.tar.gz'));
+  await publishRecording(bundleDir, path.join(task, 'recording'));
   process.env.PAB_CACHE = path.join(root, '.cache');
   return { repo: new Repo(root), bundleDir };
 }

@@ -100,7 +100,7 @@ function cmdList(flags: Args['flags']): void {
   for (const id of repo.taskIds()) {
     const task = repo.task(id);
     const card = task.card();
-    const recorded = task.archiveParts().length ? '' : '  (no recording yet)';
+    const recorded = task.recordingFiles().length ? '' : '  (no recording yet)';
     console.log(`${id.padEnd(28)} ${card.title ?? ''}${recorded}`);
   }
 }
@@ -195,13 +195,13 @@ async function cmdInspect(positional: string[], flags: Args['flags']): Promise<v
 
 async function cmdAudit(positional: string[], flags: Args['flags']): Promise<void> {
   const repo = repoOf(flags);
-  const args = positional.length ? positional : repo.taskIds().filter((id) => repo.task(id).archiveParts().length);
+  const args = positional.length ? positional : repo.taskIds().filter((id) => repo.task(id).recordingFiles().length);
   let failed = 0;
   for (const arg of args) {
     const target = await resolveTarget(arg, repo);
     const { bundle, rules } = loadTarget(target);
     const findings = await auditBundle(bundle, rules);
-    for (const part of target.task?.archiveParts() ?? []) {
+    for (const part of target.task?.recordingFiles() ?? []) {
       const mb = fs.statSync(part).size / 1024 / 1024;
       if (mb > 50) findings.push({ check: 'size', detail: `${path.basename(part)} is ${mb.toFixed(1)} MB (git hosts warn above 50 MB)` });
     }

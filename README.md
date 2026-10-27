@@ -27,11 +27,11 @@ agent ─▶ browser ─▶ replay proxy (whistle + replay plugin) ─▶ record
 ## Repository layout
 
 ```text
-tasks/<id>/        one task: task.yaml, bundle.tar.gz (the recording), rules/, grading.yaml
+tasks/<id>/        one task: task.yaml, recording/, rules/, grading.yaml
 sites/             site rules shared by all tasks (_default.yaml applies everywhere)
 src/               replay engine, whistle plugin, bundle format, CLI (pab)
 plugins/           whistle plugin package that loads the replay engine
-deploy/            replay service image, browser image, Pod and NetworkPolicy examples
+deploy/            replay and task images (built locally), a local Docker check
 docs/              task format, bundle format, site rules, deployment
 ```
 
@@ -80,6 +80,21 @@ node bin/pab.js audit                          # check recordings are safe to pu
 node bin/pab.js stats .cache/logs/replay-*.jsonl
 ```
 
+## As a package
+
+The replay engine, the recording format and the `pab` command are published to npm as
+`personal-agent-benchmark`; tasks are not part of the package.
+
+```bash
+npm install personal-agent-benchmark@0.1.0
+npx pab replay path/to/tasks/<id>
+```
+
+Modules are imported by path, for example `personal-agent-benchmark/scoring` or
+`personal-agent-benchmark/core/rules`; `exports` in `package.json` lists them. While the version
+is 0.x, a new minor version may change them. 0.1.x reads and writes recordings in format 2
+([docs/bundle-format.md](docs/bundle-format.md)); a new format comes with a new minor version.
+
 ## Tasks
 
 No task is published yet; `node bin/pab.js list` shows the tasks of a checkout.
@@ -92,8 +107,8 @@ See [docs/tasks.md](docs/tasks.md) for the task format and how tasks are added.
   included, to the replay plugin. The plugin only reads the recording.
 - Its DNS points at a dead address and proxy variables are removed, so even a request that slipped
   past the plugin could not resolve a host.
-- In Kubernetes, a NetworkPolicy blocks egress from the replay Pod. See
-  [docs/deploy.md](docs/deploy.md).
+- The platform that runs the replay keeps it off the network and the agent's browser to the
+  proxy; [docs/deploy.md](docs/deploy.md) lists what it must ensure.
 
 ## Recordings
 
@@ -104,10 +119,10 @@ for evaluating agents. To have content removed, open an issue.
 ## Documentation
 
 - [docs/tasks.md](docs/tasks.md): task directory, task card, how a task is added
-- [docs/bundle-format.md](docs/bundle-format.md): what is inside `bundle.tar.gz`
+- [docs/bundle-format.md](docs/bundle-format.md): what is inside `recording/`, and its format version
 - [docs/site-rules.md](docs/site-rules.md): request matching and site rules
 - [docs/grading.md](docs/grading.md): how answers to a task are scored
-- [docs/deploy.md](docs/deploy.md): replay service image, Pod, NetworkPolicy
+- [docs/deploy.md](docs/deploy.md): replay and task images, what a platform running replays must ensure
 
 ## License
 

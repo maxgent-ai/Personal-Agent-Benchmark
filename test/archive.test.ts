@@ -3,9 +3,54 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { test } from 'node:test';
 import * as tar from 'tar';
-import { archiveParts, createArchive, extractArchive, hashParts, PUBLIC_BUNDLE_FILES } from '../src/core/archive';
+import {
+  archiveParts,
+  createArchive,
+  extractArchive,
+  hashParts,
+  publishRecording,
+  PUBLIC_BUNDLE_FILES,
+  RECORDING_FILES,
+  RECORDING_FORMAT,
+  recordingFiles,
+  unpackRecording,
+} from '../src/core/archive';
 import { tmpDir, writeFile } from './helpers';
 import { buildShopBundle } from './shop-fixture';
+
+test('a published recording unpacks to the bundle it came from', async () => {
+  const dir = await buildShopBundle();
+  const out = path.join(tmpDir(), 'recording');
+  const written = await publishRecording(dir, out);
+  assert.deepEqual(written, recordingFiles(out));
+  const manifest = JSON.parse(fs.readFileSync(path.join(out, RECORDING_FILES.manifest), 'utf8'));
+  assert.equal(manifest.format, RECORDING_FORMAT);
+  const dest = tmpDir();
+  await unpackRecording(out, dest);
+  for (const f of PUBLIC_BUNDLE_FILES.filter((f) => f !== 'manifest.json')) {
+    assert.deepEqual(fs.readFileSync(path.join(dest, f)), fs.readFileSync(path.join(dir, f)), f);
+  }
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(dest, 'manifest.json'), 'utf8')), manifest);
+});
+
+test('rewriting the small files of a recording leaves its WARC archive as it was', async () => {
+  const dir = await buildShopBundle();
+  const out = path.join(tmpDir(), 'recording');
+  await publishRecording(dir, out);
+  const warc = fs.readFileSync(path.join(out, RECORDING_FILES.warc));
+  const manifestPath = path.join(dir, 'manifest.json');
+  fs.writeFileSync(manifestPath, JSON.stringify({ ...JSON.parse(fs.readFileSync(manifestPath, 'utf8')), locale: 'de-DE' }));
+  await publishRecording(dir, out);
+  assert.deepEqual(fs.readFileSync(path.join(out, RECORDING_FILES.warc)), warc);
+});
+
+test('replay refuses a recording in another format', async () => {
+  const out = path.join(tmpDir(), 'recording');
+  await publishRecording(await buildShopBundle(), out);
+  const manifestPath = path.join(out, RECORDING_FILES.manifest);
+  fs.writeFileSync(manifestPath, JSON.stringify({ ...JSON.parse(fs.readFileSync(manifestPath, 'utf8')), format: RECORDING_FORMAT + 1 }));
+  await assert.rejects(unpackRecording(out, tmpDir()), /recording format 3; this version reads format 2/);
+});
 
 test('bundle archives are reproducible and round-trip', async () => {
   const dir = await buildShopBundle();
