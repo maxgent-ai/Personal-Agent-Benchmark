@@ -1,0 +1,11 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "pubmatic.com", which takes precedence.
+site: pubmatic.com
+hosts:
+  - pubmatic.com
+  - "*.pubmatic.com"
+drop_params:
+  - ref
+  - piggybackCookie
+  - vcode
+  - cb

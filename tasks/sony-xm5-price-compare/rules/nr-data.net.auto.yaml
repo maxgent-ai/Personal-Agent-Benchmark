@@ -1,0 +1,23 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "nr-data.net", which takes precedence.
+site: nr-data.net
+hosts:
+  - nr-data.net
+  - "*.nr-data.net"
+drop_params:
+  - ap
+  - be
+  - dc
+  - fe
+  - perf
+  - ptid
+  - ref
+  - rst
+  - to
+  - timestamp
+body_drop:
+  - firstOccurrenceTimestamp
+  - timestamp
+block:
+  - bam.nr-data.net/rum/2/**
+  - bam.nr-data.net/events/1/**

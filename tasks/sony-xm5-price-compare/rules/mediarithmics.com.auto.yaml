@@ -1,0 +1,10 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "mediarithmics.com", which takes precedence.
+site: mediarithmics.com
+hosts:
+  - mediarithmics.com
+  - "*.mediarithmics.com"
+drop_params:
+  - key
+  - opid
+  - ops

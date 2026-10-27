@@ -1,0 +1,20 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "speedcurve.com", which takes precedence.
+site: speedcurve.com
+hosts:
+  - speedcurve.com
+  - "*.speedcurve.com"
+drop_params:
+  - CD
+  - CPU
+  - ET
+  - FID
+  - fl
+  - IX
+  - l
+  - LJS
+  - NT
+  - PN
+  - PS
+  - sid
+  - UT

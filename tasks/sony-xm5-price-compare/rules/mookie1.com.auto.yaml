@@ -1,0 +1,8 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "mookie1.com", which takes precedence.
+site: mookie1.com
+hosts:
+  - mookie1.com
+  - "*.mookie1.com"
+drop_params:
+  - src.visitorID

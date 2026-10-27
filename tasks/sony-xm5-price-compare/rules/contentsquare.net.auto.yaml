@@ -1,0 +1,28 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "contentsquare.net", which takes precedence.
+site: contentsquare.net
+hosts:
+  - contentsquare.net
+  - "*.contentsquare.net"
+drop_params:
+  - ct
+  - cvarp
+  - cvars
+  - dc
+  - dh
+  - di
+  - dr
+  - fl
+  - hd
+  - mdh
+  - pn
+  - sr
+  - str
+  - url
+  - let
+  - ri
+  - rst
+body_drop:
+  - date
+block:
+  - c.contentsquare.net/v2/events*

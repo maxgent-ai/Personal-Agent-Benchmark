@@ -1,0 +1,9 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "smartadserver.com", which takes precedence.
+site: smartadserver.com
+hosts:
+  - smartadserver.com
+  - "*.smartadserver.com"
+drop_params:
+  - partnerid
+  - partneruserid

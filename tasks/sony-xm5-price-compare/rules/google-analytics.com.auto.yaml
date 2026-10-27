@@ -1,0 +1,15 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "google-analytics.com", which takes precedence.
+site: google-analytics.com
+hosts:
+  - google-analytics.com
+  - "*.google-analytics.com"
+drop_params:
+  - _eu
+  - _s
+  - en
+  - gtm
+  - seg
+  - tfd
+  - _p
+  - sid
