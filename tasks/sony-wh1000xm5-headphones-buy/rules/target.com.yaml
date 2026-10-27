@@ -1,0 +1,7 @@
+# Target's tag and page-view events: no page content.
+site: target.com
+hosts:
+  - target.com
+  - "*.target.com"
+block:
+  - api.target.com/firefly_events/*

@@ -200,6 +200,8 @@ export class ReplayEngine {
         key: out.key,
         kind: out.kind,
         class: out.resourceClass,
+        // what the browser loads it as: "document" is a page in a tab, "iframe" a frame inside one
+        dest: headerFromRecord(req.headers, 'sec-fetch-dest')?.toLowerCase(),
         source: out.source,
         status: out.status,
         entry: out.entryId,

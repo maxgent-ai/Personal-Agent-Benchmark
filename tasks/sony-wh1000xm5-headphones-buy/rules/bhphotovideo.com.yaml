@@ -1,0 +1,7 @@
+# Cloudflare challenge probes on B&H: no page content.
+site: bhphotovideo.com
+hosts:
+  - bhphotovideo.com
+  - "*.bhphotovideo.com"
+block:
+  - www.bhphotovideo.com/cdn-cgi/challenge-platform/*

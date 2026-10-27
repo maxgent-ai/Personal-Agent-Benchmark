@@ -7,7 +7,8 @@ cd "$(dirname "$0")/.."
 TASK=${1:?usage: sh deploy/local-pod-test.sh tasks/<id> <a recorded page URL>}
 URL=${2:?usage: sh deploy/local-pod-test.sh tasks/<id> <a recorded page URL>}
 NET=pab-pod
-CAPTURED=$(node -e "const m=require('./$TASK/bundle.json'); console.log(m.recordings[0].captured_from.slice(0,19).replace('T',' '))")
+BUNDLE=$(node bin/pab.js unpack "$TASK")
+CAPTURED=$(node -e "const m=require('$BUNDLE/manifest.json'); console.log(m.captured_from.slice(0,19).replace('T',' '))")
 
 cleanup() { docker rm -f pab-pod-replay pab-pod-browser >/dev/null 2>&1 || true; docker network rm $NET >/dev/null 2>&1 || true; }
 trap cleanup EXIT

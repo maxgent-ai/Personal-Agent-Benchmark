@@ -1,0 +1,10 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "casalemedia.com", which takes precedence.
+site: casalemedia.com
+hosts:
+  - casalemedia.com
+  - "*.casalemedia.com"
+drop_params:
+  - cm_dsp_id
+  - expiration
+  - external_user_id

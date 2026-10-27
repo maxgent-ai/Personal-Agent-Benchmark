@@ -1,0 +1,28 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "sony.com", which takes precedence.
+site: sony.com
+hosts:
+  - sony.com
+  - "*.sony.com"
+drop_params:
+  - code
+  - fields.productCodes
+  - productCode
+  - target
+endpoints:
+  - name: auto_suggest_6
+    match: GET /api/occ/v2/sna/products/search
+    host: electronics.sony.com
+    kind: search
+    text_param: query
+    keep_params:
+      - query
+    similarity: 0.3
+  - name: auto_suggest_7
+    match: GET /api/occ/v2/sna/products/suggestions
+    host: electronics.sony.com
+    kind: search
+    text_param: term
+    keep_params:
+      - term
+    similarity: 0.3

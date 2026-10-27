@@ -1,0 +1,17 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "googleadservices.com", which takes precedence.
+site: googleadservices.com
+hosts:
+  - googleadservices.com
+  - "*.googleadservices.com"
+drop_params:
+  - fst
+  - gap.last_random
+  - gcl_ctr
+  - label
+  - oid
+  - rcb
+  - tag_exp
+  - tiba
+  - url
+  - random

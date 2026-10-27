@@ -1,0 +1,23 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "ebay.com", which takes precedence.
+site: ebay.com
+hosts:
+  - ebay.com
+  - "*.ebay.com"
+drop_params:
+  - ct
+  - pld
+  - trknvp
+  - ticket
+  - st
+  - ord
+body_drop:
+  - pvt
+  - crt
+  - timestamp
+  - openTime
+  - ts
+  - clientTS
+block:
+  - sherlock-events-sampler.ebay.com
+  - edgetrksvc.ebay.com/base/service/v1/viewport_events*

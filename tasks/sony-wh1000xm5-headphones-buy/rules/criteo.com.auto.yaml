@@ -1,0 +1,15 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "criteo.com", which takes precedence.
+site: criteo.com
+hosts:
+  - criteo.com
+  - "*.criteo.com"
+drop_params:
+  - bundle
+  - ceid
+  - topUrl
+  - a
+  - fu
+  - p1
+  - sc
+  - tld

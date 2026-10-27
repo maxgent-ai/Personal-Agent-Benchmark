@@ -1,0 +1,9 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "dynatrace.com", which takes precedence.
+site: dynatrace.com
+hosts:
+  - dynatrace.com
+  - "*.dynatrace.com"
+drop_params:
+  - app
+  - sn

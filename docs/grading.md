@@ -52,6 +52,30 @@ and holds that text, so the answer key is something the agent could have read du
 - Otherwise the score is the weight of the weighted checks that passed divided by their total
   weight, or 1 when there are none.
 
-A grading needs at least one of `require`, `checks` or `trace`. A report lists, per run, the
-extracted fields, each item with its result and reason (expected and actual values, the LLM's
-reason, the matching request), the score, and the model that graded.
+A grading needs at least one of `require`, `checks` or `trace`.
+
+## Run report
+
+`pab grade <task> --log <replay-log.jsonl> --answer <file>` scores one run and writes two files
+side by side, every time:
+
+- `result.json`: the score, the extracted fields, each item with its result and reason (expected
+  and actual values, the LLM's reason, the matching request), the model that graded, the answer,
+  and the pages the agent opened.
+- `report.html`: the same, as a page to read, rendered from `result.json`.
+
+Pages are what the agent opened in a browser tab (`sec-fetch-dest: document` in the replay log),
+not frames, scripts, styles or API calls. `pages.not_found` lists those that came back 404, one row
+per normalized key with the site, the route, the first URL and how many times it was opened:
+
+- `source: miss`: the recording has no copy. Recording the page lets a later run see it.
+- any other source: the site itself answered 404 while recording.
+
+Without `--answer`, or for a task without `grading.yaml`, nothing is scored but both files are
+still written with the page list. When the grader fails, the files are written with a note and the
+command exits with 1.
+
+The grader is Claude (`claude-opus-5-5`, `--model` to change). With `ANTHROPIC_API_KEY` or
+`ANTHROPIC_AUTH_TOKEN` set it calls the Claude API, where a declined request is re-run on
+Anthropic's recommended fallback model; otherwise it runs a signed-in local `claude` CLI.
+`--judge api|cli` picks one.

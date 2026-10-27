@@ -1,0 +1,8 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "on.aws", which takes precedence.
+site: on.aws
+hosts:
+  - on.aws
+  - "*.on.aws"
+block:
+  - e1-0850197d5e074be58352ddc860645af6.ecs.us-east-1.on.aws

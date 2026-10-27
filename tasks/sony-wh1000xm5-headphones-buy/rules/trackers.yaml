@@ -1,0 +1,16 @@
+# Third-party telemetry, performance beacons and bot sensors seen in this recording: they provide no
+# page content, so replay answers them with an empty 204.
+site: _default
+hosts: []
+block:
+  - "*.dynatrace.com"            # Dynatrace RUM beacons (/bf)
+  - beacon.speedcurve.com        # SpeedCurve performance beacons
+  - "*.ingest.sentry.io"         # Sentry error reports
+  - "collector-*.px-cloud.net"   # PerimeterX bot sensors
+  - "collector-*.px-cdn.net"
+  - "collector-*.pxchk.net"
+  - events.attentivemobile.com   # Attentive marketing events
+  - target.attn.tv/unrenderedCreative*
+  - vtrk.dv.tech                 # DoubleVerify tracking
+  - geolocation.onetrust.com     # cookie banner's geo lookup
+  - www.affirm.com/api/v2/session/touch_track*   # Affirm tracking

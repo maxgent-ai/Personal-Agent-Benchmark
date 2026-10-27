@@ -1,0 +1,11 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "googlesyndication.com", which takes precedence.
+site: googlesyndication.com
+hosts:
+  - googlesyndication.com
+  - "*.googlesyndication.com"
+drop_params:
+  - jk
+  - li
+  - rc
+  - type

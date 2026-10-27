@@ -1,0 +1,63 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "google.com", which takes precedence.
+site: google.com
+hosts:
+  - google.com
+  - "*.google.com"
+drop_params:
+  - ae
+  - apvc
+  - auid
+  - cerd
+  - crd
+  - ct_cookie_present
+  - data
+  - dl
+  - dr
+  - dt
+  - eitems
+  - en
+  - eoid
+  - ep.ecomm_pagetype
+  - fsk
+  - fst
+  - gap.last_random
+  - gcd
+  - gcl_ctr
+  - gdid
+  - gtm
+  - label
+  - navt
+  - oid
+  - pscrd
+  - rcb
+  - ref
+  - scrsrc
+  - tag_exp
+  - tfd
+  - tft
+  - tiba
+  - tid
+  - tids
+  - url
+  - random
+block:
+  - www.google.com/ccm/collect*
+  - www.google.com/rmkt/collect/1066288264/*
+  - www.google.com/rmkt/collect/338926928/*
+  - www.google.com/rmkt/collect/1070599711/*
+  - www.google.com/rmkt/collect/16653549404/*
+  - www.google.com/rmkt/collect/1005566788/*
+  - www.google.com/rmkt/collect/1053880347/*
+  - www.google.com/rmkt/collect/1056059933/*
+  - www.google.com/rmkt/collect/1069118966/*
+exclude:
+  - www.google.com/recaptcha/**
+endpoints:
+  - name: auto_search_3
+    match: GET /recaptcha/enterprise/anchor
+    host: www.google.com
+    kind: search
+    text_param: k
+    keep_params:
+      - k

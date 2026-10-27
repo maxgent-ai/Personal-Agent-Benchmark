@@ -27,7 +27,7 @@ agent ─▶ browser ─▶ replay proxy (whistle + replay plugin) ─▶ record
 ## Repository layout
 
 ```text
-tasks/<id>/        one task: task.yaml, bundle.tar.gz (the recording), bundle.json, rules/
+tasks/<id>/        one task: task.yaml, bundle.tar.gz (the recording), rules/, grading.yaml
 sites/             site rules shared by all tasks (_default.yaml applies everywhere)
 src/               replay engine, whistle plugin, bundle format, CLI (pab)
 plugins/           whistle plugin package that loads the replay engine
@@ -61,6 +61,16 @@ node bin/pab.js serve <task> --port 8899 --host 0.0.0.0   # in a container
 A browser of your own needs `--proxy-server=http://127.0.0.1:<port> --ignore-certificate-errors
 --disable-quic`. The proxy also answers `http://rr.control/{health,stats,reset}`: `stats` counts
 hits and misses, `reset` starts a new run.
+
+Scoring a run: give the request log of the replay and the agent's final answer.
+
+```bash
+node bin/pab.js grade <task> --log .cache/logs/replay-<task>-<time>.jsonl --answer answer.md
+```
+
+It writes `result.json` and `report.html` (rendered from it) to `.cache/runs/<task>-<time>/`
+(`--out` to choose): the score, each graded item with its reason, and the pages the agent opened
+that came back 404 (see [docs/grading.md](docs/grading.md#run-report)).
 
 Other commands:
 

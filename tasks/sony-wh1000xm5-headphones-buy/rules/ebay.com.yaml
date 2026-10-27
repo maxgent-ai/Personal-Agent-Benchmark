@@ -1,0 +1,7 @@
+# eBay's client metrics: no page content.
+site: ebay.com
+hosts:
+  - ebay.com
+  - "*.ebay.com"
+block:
+  - www.ebay.com/splashui/metrics*

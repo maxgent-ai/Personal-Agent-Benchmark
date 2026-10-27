@@ -9,8 +9,11 @@ import { normalizeRequest } from './core/normalize';
 import { RuleSet } from './core/rules';
 import { RecordStore } from './core/store';
 import { readJsonl } from './core/util';
+import { parseGrading, validateGrading, type Grading } from './grading';
+import { pickJudge } from './judge';
 import type { ReplayStats } from './replay/engine';
 import { startReplayServer } from './replay/launcher';
+import { scoreRun, writeRun, type LogLine } from './scoring';
 import { Repo, resolveTarget, type ReplayTarget } from './tasks';
 
 const HELP = `pab - Personal Agent Benchmark: replay real-site tasks offline
@@ -24,6 +27,9 @@ const HELP = `pab - Personal Agent Benchmark: replay real-site tasks offline
   pab audit [<task>...]                      check recordings are safe to publish (all tasks by default)
   pab unpack <task>                          unpack the recording and print its directory
   pab stats <replay-log.jsonl>               summarize a replay log
+  pab grade <task> --log <replay-log.jsonl> [--answer FILE] [--out DIR] [--judge api|cli] [--model M]
+                                             score a run and list the pages that returned 404;
+                                             writes result.json and report.html
 
 <task> is a task id, a task directory, or an unpacked bundle directory.
 --repo DIR (or PAB_REPO) points at another checkout of this repository.
@@ -82,6 +88,8 @@ export async function main(argv: string[]): Promise<void> {
     }
     case 'stats':
       return cmdStats(positional);
+    case 'grade':
+      return cmdGrade(positional, flags);
     default:
       console.log(HELP);
   }
@@ -222,6 +230,43 @@ function cmdStats(positional: string[]): void {
     } else c.hit++;
   }
   printStats({ requests: rows.length, byClass: byClass as ReplayStats['byClass'], bySource, misses: misses as ReplayStats['misses'] });
+}
+
+async function cmdGrade(positional: string[], flags: Args['flags']): Promise<void> {
+  const [arg] = positional;
+  const logFile = str(flags.log);
+  if (!arg || !logFile) throw new Error('usage: pab grade <task> --log <replay-log.jsonl> [--answer FILE] [--out DIR]');
+  const repo = repoOf(flags);
+  const target = await resolveTarget(arg, repo);
+  const { bundle, rules } = loadTarget(target);
+  const task = target.task;
+  const card = task?.card();
+  let grading: Grading | undefined;
+  if (task && fs.existsSync(task.gradingPath)) {
+    grading = parseGrading(fs.readFileSync(task.gradingPath, 'utf8'));
+    const errors = validateGrading(grading);
+    if (errors.length) throw new Error(`${task.gradingPath}:\n  ${errors.join('\n  ')}`);
+  }
+  const answer = str(flags.answer) ? fs.readFileSync(str(flags.answer)!, 'utf8') : undefined;
+  const result = await scoreRun({
+    task: { id: card?.id ?? target.name, title: card?.title, prompt: card?.prompt },
+    grading,
+    answer,
+    log: readJsonl<LogLine>(logFile),
+    logFile: path.resolve(logFile),
+    rules,
+    probes: Object.values(bundle.manifest().not_found ?? {}),
+    judge: grading && answer !== undefined ? pickJudge(str(flags.judge), str(flags.model)) : undefined,
+  });
+  const out = str(flags.out) ?? path.join(repo.cacheDir, 'runs', `${target.name}-${new Date().toISOString().replace(/[:.]/g, '-')}`);
+  const files = writeRun(result, out);
+  if (result.score !== undefined) console.log(`score ${(result.score * 100).toFixed(1)}%${result.grader ? ` (graded by ${result.grader.model})` : ''}`);
+  for (const n of result.notes) console.log(n);
+  console.log(`pages that returned 404: ${result.pages.not_found.length}`);
+  for (const p of result.pages.not_found) console.log(`  [${p.source === 'miss' ? 'not recorded' : 'recorded as 404'}] x${p.count} ${p.route.slice(0, 140)}`);
+  console.log(`result: ${files.json}`);
+  console.log(`report: ${files.html}`);
+  if (grading && answer !== undefined && result.score === undefined) process.exitCode = 1;
 }
 
 export function printStats(stats: ReplayStats): void {

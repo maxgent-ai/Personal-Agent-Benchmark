@@ -1,0 +1,37 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "dv.tech", which takes precedence.
+site: dv.tech
+hosts:
+  - dv.tech
+  - "*.dv.tech"
+drop_params:
+  - adhgt
+  - b0
+  - chgt
+  - ee_dp_btadsrv
+  - ee_dp_btreg
+  - ee_dp_sah
+  - ee_dp_tmads
+  - engalms
+  - eoid
+  - impid
+  - isbxdms
+  - isgmmims
+  - isgmv4mims
+  - ismms
+  - isumms
+  - lftb
+  - sei
+  - sftb
+  - tetms
+  - tmet
+  - ttfurm
+  - tuums
+  - tuviems
+  - tuviims
+  - vdur
+  - vetms
+  - vltms
+  - vstsz
+block:
+  - maestro-ae1.tps.dv.tech/event.png*

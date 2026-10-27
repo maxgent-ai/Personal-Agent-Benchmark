@@ -1,0 +1,10 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "paypal.com", which takes precedence.
+site: paypal.com
+hosts:
+  - paypal.com
+  - "*.paypal.com"
+drop_params:
+  - message_request_id
+body_drop:
+  - timestamp
