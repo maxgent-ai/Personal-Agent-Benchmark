@@ -1,9 +1,0 @@
-# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
-# corrections go into a hand-written rules file for site "perfdrive.com", which takes precedence.
-site: perfdrive.com
-hosts:
-  - perfdrive.com
-  - "*.perfdrive.com"
-body_drop:
-  - __uzmbj
-  - __uzmdj

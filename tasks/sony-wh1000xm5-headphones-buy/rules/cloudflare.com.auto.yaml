@@ -1,8 +1,0 @@
-# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
-# corrections go into a hand-written rules file for site "cloudflare.com", which takes precedence.
-site: cloudflare.com
-hosts:
-  - cloudflare.com
-  - "*.cloudflare.com"
-exclude:
-  - challenges.cloudflare.com/cdn-cgi/**

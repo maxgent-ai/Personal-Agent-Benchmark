@@ -1,9 +1,0 @@
-# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
-# corrections go into a hand-written rules file for site "snapchat.com", which takes precedence.
-site: snapchat.com
-hosts:
-  - snapchat.com
-  - "*.snapchat.com"
-body_drop:
-  - sa
-  - ts

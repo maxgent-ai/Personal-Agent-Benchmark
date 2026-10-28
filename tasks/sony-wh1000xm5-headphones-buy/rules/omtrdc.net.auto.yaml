@@ -1,8 +1,0 @@
-# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
-# corrections go into a hand-written rules file for site "omtrdc.net", which takes precedence.
-site: omtrdc.net
-hosts:
-  - omtrdc.net
-  - "*.omtrdc.net"
-drop_params:
-  - ts
