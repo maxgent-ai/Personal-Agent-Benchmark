@@ -1,4 +1,4 @@
-import type { IncomingMessage, Server, ServerResponse } from 'node:http';
+import { type IncomingMessage, type Server, type ServerResponse, validateHeaderName, validateHeaderValue } from 'node:http';
 import { ReplayEngine } from './engine';
 
 /**
@@ -46,9 +46,24 @@ function cleanHeaders(headers: IncomingMessage['headers']): Record<string, strin
   return out;
 }
 
+/** Framing of the recorded connection; replay frames its own responses (Content-Length, no trailers). */
+const FRAMING_HEADERS = new Set(['connection', 'keep-alive', 'proxy-connection', 'te', 'trailer', 'transfer-encoding', 'upgrade']);
+
+/**
+ * Headers as Node sends them. Node refuses a whole response for one header it cannot send (a bad
+ * name, control characters, characters beyond Latin-1, a Trailer on a response with a length), so
+ * such a header is left out instead.
+ */
 function toNodeHeaders(list: [string, string][]): Record<string, string | string[]> {
   const out: Record<string, string | string[]> = {};
   for (const [k, v] of list) {
+    if (FRAMING_HEADERS.has(k.toLowerCase())) continue;
+    try {
+      validateHeaderName(k);
+      validateHeaderValue(k, v);
+    } catch {
+      continue;
+    }
     const prev = out[k];
     out[k] = prev === undefined ? v : Array.isArray(prev) ? [...prev, v] : [prev, v];
   }

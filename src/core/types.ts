@@ -16,6 +16,8 @@ export interface Exchange {
   /** Content-Encoding the site used on the wire; the stored body is already decoded. */
   originalContentEncoding?: string;
   resourceType?: string;
+  /** Read from a WARC: stored header lines of the request and response that are not headers (see parseHeaderLines). */
+  malformedHeaderLines?: number;
 }
 
 /** Index row for one exchange inside a bundle (indexes/entries.jsonl). */

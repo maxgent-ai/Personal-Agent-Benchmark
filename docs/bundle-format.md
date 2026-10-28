@@ -90,6 +90,10 @@ Each exchange is two records: `response` (or `revisit`) first, then `request`, w
   original.
 - Requests carry no `Cookie` or `Authorization` header; every `Set-Cookie` value is `REDACTED`.
   `pab audit` verifies both.
+- Every header line is a header: a header sent several times is stored once per value. Recordings
+  made with record-replay before 0.5.5 stored such a header as one value joined by newlines, so
+  each further value is a line of its own; readers take those lines as values of the header on the
+  line before, and `pab audit` fails a bundle that has any.
 - Custom WARC headers: `RR-Exchange-Id` (the id in `entries.jsonl`), `RR-Resource-Type`.
 
 ## entries.jsonl

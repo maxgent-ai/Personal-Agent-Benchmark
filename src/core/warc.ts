@@ -105,45 +105,79 @@ export class WarcWriter {
   }
 }
 
-function headerList(record: WARCRecord): HeaderList {
-  const out: HeaderList = [];
-  const h = record.httpHeaders?.headers;
-  if (!h) return out;
-  for (const [k, v] of h as Iterable<[string, string]>) {
-    if (k.toLowerCase() === 'set-cookie' && 'getMultiple' in h) {
-      const multi = (h as { getMultiple(n: string): string[] | undefined }).getMultiple(k);
-      if (multi && multi.length > 1) {
-        for (const m of multi) out.push([k, m]);
+const HEADER_NAME = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
+const CRLFCRLF = Buffer.from('\r\n\r\n');
+
+/**
+ * Header lines as stored, as a header list. Recorders before record-replay 0.5.5 kept a header the
+ * site sent several times (Set-Cookie above all) as one value joined by newlines, as DevTools
+ * reports it, and wrote it that way: each further value is a line of its own after the header's
+ * line, ended by a bare newline, or by CRLF once the recording was rewritten. A line that is not a
+ * header is taken as a further value of the header before it; `malformed` counts those lines (lines
+ * before any header are left out).
+ */
+export function parseHeaderLines(lines: string[]): { headers: HeaderList; malformed: number } {
+  const headers: HeaderList = [];
+  let malformed = 0;
+  let last: string | undefined;
+  for (const line of lines) {
+    // values joined to a line by bare newlines are never headers of their own
+    for (const [i, part] of line.split(/\r?\n|\r/).entries()) {
+      const colon = part.indexOf(':');
+      const name = colon > 0 ? part.slice(0, colon) : '';
+      if (i === 0 && HEADER_NAME.test(name)) {
+        headers.push([name, part.slice(colon + 1).trim()]);
+        last = name;
         continue;
       }
+      malformed++;
+      if (last && part.trim()) headers.push([last, part.trim()]);
     }
-    out.push([k, v]);
   }
-  return out;
+  return { headers, malformed };
+}
+
+interface HttpMessage {
+  /** Status line of a response, request line of a request; empty when the record has none. */
+  startLine: string;
+  headers: HeaderList;
+  /** Stored header lines that are not headers (see parseHeaderLines). */
+  malformedHeaderLines: number;
+  body: Buffer;
+}
+
+/**
+ * The HTTP message stored in a record, read by its bytes: warcio's own parsing drops header lines
+ * without a colon, so a malformed header could be neither repaired nor seen.
+ */
+function httpMessage(content: Buffer): HttpMessage {
+  const end = content.indexOf(CRLFCRLF);
+  const [startLine = '', ...lines] = (end < 0 ? content : content.subarray(0, end)).toString('utf8').split('\r\n');
+  const { headers, malformed } = parseHeaderLines(lines.filter(Boolean));
+  return { startLine, headers, malformedHeaderLines: malformed, body: end < 0 ? Buffer.alloc(0) : content.subarray(end + 4) };
+}
+
+/** Status of a stored response; a request that got no response is stored with status -1. */
+function statusOf(startLine: string): { status: number; statusText: string } {
+  const m = /^HTTP\/\S+ (-?\d+) ?(.*)$/.exec(startLine);
+  return m ? { status: Number(m[1]), statusText: m[2] } : { status: 200, statusText: '' };
+}
+
+async function readRecordAt(file: string, span: Span): Promise<{ type: string; http: HttpMessage }> {
+  const record = await WARCParser.parse([readSpan(file, span)], { keepHeadersCase: true, parseHttp: false });
+  if (!record) throw new Error(`no WARC record at ${file}:${span.offset}`);
+  return { type: record.warcType ?? '', http: httpMessage(Buffer.from(await record.readFully(false))) };
 }
 
 /** Reads one record (plain or gzip member) at a known offset and returns its HTTP status, headers and payload. */
-export async function readResponseAt(file: string, span: Span): Promise<StoredResponse & { type: string }> {
-  const buf = readSpan(file, span);
-  const record = await WARCParser.parse([buf], { keepHeadersCase: true });
-  if (!record) throw new Error(`no WARC record at ${file}:${span.offset}`);
-  const body = Buffer.from(await record.readFully(false));
-  const hs = record.httpHeaders;
-  return {
-    type: record.warcType,
-    status: Number(hs?.statusCode ?? 200),
-    statusText: hs?.statusText ?? '',
-    headers: headerList(record),
-    body,
-  };
+export async function readResponseAt(file: string, span: Span): Promise<StoredResponse & { type: string; malformedHeaderLines: number }> {
+  const { type, http } = await readRecordAt(file, span);
+  return { type, ...statusOf(http.startLine), headers: http.headers, malformedHeaderLines: http.malformedHeaderLines, body: http.body };
 }
 
-export async function readRequestAt(file: string, span: Span): Promise<{ headers: HeaderList; body: Buffer }> {
-  const buf = readSpan(file, span);
-  const record = await WARCParser.parse([buf], { keepHeadersCase: true });
-  if (!record) throw new Error(`no WARC record at ${file}:${span.offset}`);
-  const body = Buffer.from(await record.readFully(false));
-  return { headers: headerList(record), body };
+export async function readRequestAt(file: string, span: Span): Promise<{ headers: HeaderList; malformedHeaderLines: number; body: Buffer }> {
+  const { http } = await readRecordAt(file, span);
+  return { headers: http.headers, malformedHeaderLines: http.malformedHeaderLines, body: http.body };
 }
 
 function readSpan(file: string, span: Span): Buffer {
@@ -161,17 +195,14 @@ function readSpan(file: string, span: Span): Buffer {
 export async function* readExchanges(file: string): AsyncGenerator<Exchange> {
   const stream = fs.createReadStream(file);
   let n = 0;
-  const parser = new WARCParser(stream, { keepHeadersCase: true });
+  const parser = new WARCParser(stream, { keepHeadersCase: true, parseHttp: false });
   const responses: Exchange[] = [];
   const byRespId = new Map<string, Exchange>();
-  const requests: { concurrentTo?: string; url: string; method: string; headers: HeaderList; body: Buffer }[] = [];
+  const requests: { concurrentTo?: string; url: string; method: string; headers: HeaderList; malformedHeaderLines: number; body: Buffer }[] = [];
   for await (const record of parser) {
     const type = record.warcType;
     if (type === 'response' || type === 'revisit') {
-      const hs = record.httpHeaders;
-      const body = type === 'response' ? Buffer.from(await record.readFully(false)) : Buffer.alloc(0);
-      const headers = headerList(record);
-      const enc = header(headers, 'content-encoding');
+      const http = httpMessage(Buffer.from(await record.readFully(false)));
       const ex: Exchange = {
         id: `w${n++}`,
         ts: record.warcDate ?? new Date().toISOString(),
@@ -179,22 +210,23 @@ export async function* readExchanges(file: string): AsyncGenerator<Exchange> {
         url: record.warcTargetURI ?? '',
         httpVersion: 'HTTP/1.1',
         reqHeaders: [],
-        status: Number(hs?.statusCode ?? 200),
-        statusText: hs?.statusText ?? '',
-        respHeaders: headers,
-        respBody: body,
-        originalContentEncoding: enc,
+        ...statusOf(http.startLine),
+        respHeaders: http.headers,
+        respBody: type === 'response' ? http.body : Buffer.alloc(0),
+        originalContentEncoding: header(http.headers, 'content-encoding'),
+        malformedHeaderLines: http.malformedHeaderLines,
       };
       responses.push(ex);
       byRespId.set(record.warcHeader('WARC-Record-ID') ?? '', ex);
     } else if (type === 'request') {
-      const hs = record.httpHeaders;
+      const http = httpMessage(Buffer.from(await record.readFully(false)));
       requests.push({
         concurrentTo: record.warcHeader('WARC-Concurrent-To') ?? undefined,
         url: record.warcTargetURI ?? '',
-        method: hs?.method ?? 'GET',
-        headers: headerList(record),
-        body: Buffer.from(await record.readFully(false)),
+        method: http.startLine.split(' ')[0] || 'GET',
+        headers: http.headers,
+        malformedHeaderLines: http.malformedHeaderLines,
+        body: http.body,
       });
     } else {
       await record.skipFully();
@@ -205,6 +237,7 @@ export async function* readExchanges(file: string): AsyncGenerator<Exchange> {
     if (!ex) continue;
     ex.method = r.method.toUpperCase();
     ex.reqHeaders = r.headers;
+    ex.malformedHeaderLines = (ex.malformedHeaderLines ?? 0) + r.malformedHeaderLines;
     ex.reqBody = r.body.length ? r.body : undefined;
   }
   for (const ex of responses) yield ex;
