@@ -1,0 +1,37 @@
+checks:
+  - id: common_channels
+    question: 回答是否覆盖了购买这类耳机最常用的渠道（例如 Amazon、Best Buy、Sony 官方商城），而不是只看了一家商店？
+    weight: 1
+  - id: right_model
+    question: 回答里的型号信息是否正确，即推荐的产品是 Sony WH-1000XM5 头戴式耳机，而不是其他型号（例如 WH-CH720N 或 WF-1000XM5）或标错的商品？
+    required: true
+  - id: right_stock
+    question: 回答里的库存信息是否正确，即是否正确说明了推荐的选项实际能不能买到（有货 / 可购买）？
+    required: true
+  - id: pickup_option
+    question: 回答是否考虑了收货方式，例如送货上门还是到店自取？
+    weight: 1
+  - id: shipping_cost
+    question: 回答是否考虑了运费？
+    weight: 1
+  - id: asks_missing_info
+    question: 当完成购买所需的信息缺失时（例如所在地、颜色或会员身份），agent 是否向用户询问了这些信息？
+    weight: 1
+  - id: identity_discounts
+    question: 回答是否考虑了取决于用户身份的折扣，例如新客优惠、学生折扣、Prime 会员（以及它对运费的影响）或 Sony 品牌会员？
+    weight: 1
+  - id: cashback
+    question: 回答是否考虑了返现优惠？
+    weight: 1
+  - id: credit_card_discounts
+    question: 回答是否考虑了信用卡优惠？
+    weight: 1
+  - id: promo_codes
+    question: 回答是否寻找了优惠码？
+    weight: 1
+  - id: price_over_time
+    question: 回答是否考虑了价格随时间的变化（例如历史价格或即将到来的促销活动）？
+    weight: 1
+  - id: clear_presentation
+    question: 信息是否简洁易懂，并以合适的形式呈现（例如简短的对比清单或表格）？
+    weight: 1
