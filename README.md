@@ -87,7 +87,7 @@ The replay engine, the recording format and the `pab` command are published to n
 `personal-agent-benchmark`; tasks are not part of the package.
 
 ```bash
-npm install personal-agent-benchmark@0.3.0
+npm install personal-agent-benchmark@0.2.0
 npx pab replay path/to/tasks/<id>
 ```
 
@@ -96,6 +96,14 @@ Modules are imported by path, for example `personal-agent-benchmark/scoring` or
 is 0.x, a new minor version may change them. 0.1.x, 0.2.x and 0.3.x read and write recordings in
 format 2 ([docs/bundle-format.md](docs/bundle-format.md)); a new format comes with a new minor
 version.
+
+`npm run release-check` says whether a new version is needed. The recording tool is the package's
+one user, so the answer is yes only when something it uses changed since the version on npm (the
+commit npm recorded for it): the modules it imports, read from its checkout next to this one
+(`PAB_CONSUMER` points elsewhere), with every file they load and the declarations they refer to;
+the whistle plugin; `sites/`, `docs/site-rules.md` and `docs/grading.md`; and the dependencies.
+`npm publish` runs the check and stops when the answer is no. `PAB_PUBLISH_ANYWAY=1` publishes
+anyway, for example when another user needs a change.
 
 ## Tasks
 
