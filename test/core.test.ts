@@ -6,9 +6,9 @@ import { Bundle } from '../src/core/bundle';
 import { normalizeRequest } from '../src/core/normalize';
 import { fillTemplate, matchPath, RuleSet } from '../src/core/rules';
 import { RecordStore } from '../src/core/store';
-import { readRequestAt, readResponseAt } from '../src/core/warc';
+import { parseHeaderLines, readExchanges, readRequestAt, readResponseAt, WarcWriter } from '../src/core/warc';
 import { ReplayEngine } from '../src/replay/engine';
-import { REPO_ROOT, tmpDir, writeFile } from './helpers';
+import { exchanges, REPO_ROOT, tmpDir, writeFile } from './helpers';
 import { buildShopBundle, PNG, SHOP_RULES } from './shop-fixture';
 
 test('path patterns capture segments and fill key templates', () => {
@@ -85,6 +85,55 @@ test('writeBundle stores a deduplicated, uncompressed WARC with indexes', async 
   const store = new RecordStore(bundle, RuleSet.load([bundle.rulesDir]));
   assert.equal((await store.response(store.byId.get(png.id)!)).body.length, PNG.length, 'revisit resolves to original payload');
   assert.deepEqual(bundle.pages().map((p) => p.fetched), ['GET', 'GET']);
+});
+
+test('WARC readers take values joined by newlines as headers of their own, and count the lines', async () => {
+  const file = path.join(tmpDir(), 'joined.warc');
+  const writer = new WarcWriter(file);
+  const [ex] = exchanges([{ url: 'https://shop.test/', body: 'x' }]);
+  // as recorders before record-replay 0.5.5 stored a header the site sent several times
+  ex.respHeaders = [
+    ['Set-Cookie', 'a=REDACTED; Path=/'],
+    ['Set-Cookie', 'b=REDACTED; Expires=Wed, 27-Oct-2027 11:45:09 GMT; Path=/\nc=REDACTED; Path=/'],
+    ['Content-Type', 'text/html'],
+  ];
+  const spans = await writer.writeExchange(ex);
+  const [failed] = exchanges([{ url: 'https://shop.test/failed', status: -1, body: '' }]);
+  failed.statusText = '';
+  const failedSpans = await writer.writeExchange(failed);
+  writer.close();
+  assert.equal((await readResponseAt(file, failedSpans.resp)).status, -1, 'a request that got no response');
+  const expected = [
+    ['Set-Cookie', 'a=REDACTED; Path=/'],
+    ['Set-Cookie', 'b=REDACTED; Expires=Wed, 27-Oct-2027 11:45:09 GMT; Path=/'],
+    ['Set-Cookie', 'c=REDACTED; Path=/'],
+    ['Content-Type', 'text/html'],
+  ];
+  const resp = await readResponseAt(file, spans.resp);
+  assert.deepEqual(resp.headers, expected, 'each cookie once, in order');
+  assert.equal(resp.malformedHeaderLines, 1);
+  assert.equal(resp.status, 200);
+  assert.equal(resp.body.toString(), 'x');
+  const req = await readRequestAt(file, spans.req);
+  assert.deepEqual(req.headers, [['Host', 'shop.test'], ['Accept', '*/*']]);
+  assert.equal(req.malformedHeaderLines, 0);
+  const read = [];
+  for await (const e of readExchanges(file)) read.push(e);
+  assert.equal(read.length, 2);
+  assert.deepEqual(read[0].respHeaders, expected);
+  assert.equal(read[0].malformedHeaderLines, 1);
+  assert.equal(read[0].method, 'GET');
+  assert.equal(read[0].respBody.toString(), 'x');
+
+  // the same cookies once the recording was rewritten: warcio had split each line at its first colon
+  assert.deepEqual(parseHeaderLines(['junk before any header', 'Set-Cookie: a=REDACTED; Path=/', 'b=live; Expires=Wed, 27-Oct-2027 11: 45:09 GMT', 'Content-Type: text/html']), {
+    headers: [
+      ['Set-Cookie', 'a=REDACTED; Path=/'],
+      ['Set-Cookie', 'b=live; Expires=Wed, 27-Oct-2027 11: 45:09 GMT'],
+      ['Content-Type', 'text/html'],
+    ],
+    malformed: 2,
+  });
 });
 
 test('replay engine walks the lookup ladder and never needs the network', async () => {

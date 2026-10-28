@@ -16,8 +16,10 @@ const CREDENTIAL_REQUEST_HEADERS = ['cookie', 'authorization', 'proxy-authorizat
 
 /**
  * Checks that a bundle is safe to publish: no credentials in stored requests, no live cookie
- * values in stored responses, no pages the rules exclude (bot checks), and nothing in the manifest
- * beyond what replay reads (such as who recorded it).
+ * values in stored responses, no stored header lines that are not headers (a header sent several
+ * times stored as one value joined by newlines hides every cookie after the first from the cookie
+ * check), no pages the rules exclude (bot checks), and nothing in the manifest beyond what replay
+ * reads (such as who recorded it).
  * Returns one finding per problem; an empty list means the bundle passed.
  */
 export async function auditBundle(bundle: Bundle, rules: RuleSet): Promise<AuditFinding[]> {
@@ -37,6 +39,7 @@ export async function auditBundle(bundle: Bundle, rules: RuleSet): Promise<Audit
     for (const [name] of ex.reqHeaders) {
       if (CREDENTIAL_REQUEST_HEADERS.includes(name.toLowerCase())) add('request-credentials', `${name} header on ${ex.method} ${ex.url}`);
     }
+    if (ex.malformedHeaderLines) add('header-lines', `${ex.malformedHeaderLines} stored header lines are not headers (values joined by newlines?) on ${ex.method} ${ex.url}`);
     for (const [name, value] of ex.respHeaders) {
       if (name.toLowerCase() !== 'set-cookie') continue;
       const cookieValue = value.split(';')[0].split('=').slice(1).join('=').trim();

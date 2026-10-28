@@ -45,7 +45,7 @@ test('a task replays from its archive with shared and task rules', async () => {
   assert.ok(cart.body.toString().includes('$199.00'), 'the cart as last recorded');
 });
 
-test('audit passes a clean bundle and reports credentials, live cookies and the recorder', async () => {
+test('audit passes a clean bundle and reports credentials, live cookies, malformed header lines and the recorder', async () => {
   const { bundleDir } = await shopRepo();
   const rules = RuleSet.load([path.join(bundleDir, 'rules')]);
   assert.deepEqual(await auditBundle(new Bundle(bundleDir), rules), []);
@@ -55,13 +55,17 @@ test('audit passes a clean bundle and reports credentials, live cookies and the 
   assert.deepEqual(await auditBundle(new Bundle(bundleDir), rules), []);
 
   const dirty = await buildShopBundle();
-  const [ex] = exchanges([{ url: 'https://shop.test/', body: 'x' }]);
+  const [ex, joined] = exchanges([{ url: 'https://shop.test/', body: 'x' }, { url: 'https://shop.test/joined', body: 'y' }]);
   ex.reqHeaders.push(['Cookie', 'session=abc']);
   ex.respHeaders = [['Set-Cookie', 'session=live; Path=/']];
-  await writeBundle(new Bundle(dirty), [ex], { meta: { task_id: 'dirty' }, rules });
+  // as recorders before record-replay 0.5.5 stored two cookies: the second one on a line of its own
+  joined.respHeaders = [['Set-Cookie', 'a=REDACTED; Path=/\nb=live; Path=/']];
+  await writeBundle(new Bundle(dirty), [ex, joined], { meta: { task_id: 'dirty' }, rules });
   // what older recorder versions wrote into the manifest
   const manifestPath = new Bundle(dirty).manifestPath;
   fs.writeFileSync(manifestPath, JSON.stringify({ ...JSON.parse(fs.readFileSync(manifestPath, 'utf8')), recorder: 'someone' }));
-  const checks = (await auditBundle(new Bundle(dirty), rules)).map((f) => f.check).sort();
-  assert.deepEqual(checks, ['manifest', 'request-credentials', 'response-cookies']);
+  const findings = await auditBundle(new Bundle(dirty), rules);
+  assert.deepEqual([...new Set(findings.map((f) => f.check))].sort(), ['header-lines', 'manifest', 'request-credentials', 'response-cookies']);
+  assert.ok(findings.some((f) => f.check === 'header-lines' && f.detail.endsWith('https://shop.test/joined')), JSON.stringify(findings));
+  assert.ok(findings.some((f) => f.check === 'response-cookies' && f.detail.endsWith('https://shop.test/joined')), 'the cookie on a line of its own is checked too');
 });
