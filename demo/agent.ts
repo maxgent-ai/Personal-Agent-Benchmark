@@ -120,6 +120,7 @@ export async function runAgent(o: AgentOptions): Promise<AgentResult> {
   });
 
   o.signal?.addEventListener('abort', () => agent.abort(), { once: true });
+  o.onEvent({ type: 'start', model: o.model });
   await agent.prompt(o.prompt);
   const messages = agent.state.messages;
   const assistants = messages.filter((m) => m.role === 'assistant');

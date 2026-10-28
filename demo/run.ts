@@ -7,7 +7,7 @@ import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { runAgent, stopHarness } from './agent.ts';
 import { PAB_ROOT, pab } from './pab.ts';
-import { writeReport } from './report.ts';
+import { runStats, writeReport, type AgentEvent } from './report.ts';
 
 const { Repo, resolveTarget } = pab('tasks.js');
 const { loadTarget } = pab('cli.js');
@@ -48,8 +48,10 @@ const stamp = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').sl
 const dir = path.join(HERE, 'runs', `${a.task}-${stamp}`);
 fs.mkdirSync(path.join(dir, 'browser-use'), { recursive: true });
 const logFile = path.join(dir, 'replay.jsonl');
-fs.writeFileSync(path.join(dir, 'run.json'), JSON.stringify({ task, repo: path.resolve(a.repo), model: a.model, started: new Date().toISOString() }, null, 2) + '\n');
+const started = new Date().toISOString();
+fs.writeFileSync(path.join(dir, 'run.json'), JSON.stringify({ task, repo: path.resolve(a.repo), model: a.model, started }, null, 2) + '\n');
 const transcript = fs.createWriteStream(path.join(dir, 'transcript.jsonl'));
+const events: AgentEvent[] = [];
 
 const server = await startReplayServer({ bundleDir: target.bundleDir, rulesDirs: target.rulesDirs, port: Number(a.port), logFile });
 const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'pab-demo-'));
@@ -101,7 +103,9 @@ try {
     startUrl: a.url ?? bundle.pages().find((p: { note?: string }) => p.note !== 'not-found-probe')?.url,
     signal: abort.signal,
     onEvent: (e) => {
-      transcript.write(JSON.stringify({ t: new Date().toISOString(), ...e }) + '\n');
+      const event = { t: new Date().toISOString(), ...e } as AgentEvent;
+      events.push(event);
+      transcript.write(JSON.stringify(event) + '\n');
       if (e.type === 'tool_call') console.log(`[step ${e.step}] ${String((e.args as { code?: string }).code ?? '').split('\n').slice(0, 3).join(' | ').slice(0, 160)}`);
       if (e.type === 'tool_result' && e.isError) console.log(`  error: ${String(e.result ?? '').split('\n')[0].slice(0, 160)}`);
       if (e.type === 'assistant' && e.text) console.log(`\n${e.text}\n`);
@@ -135,6 +139,8 @@ const md = await writeReport({
   logFile,
   rules,
   probes: Object.values(manifest.not_found ?? {}),
+  gradingFile: target.task?.gradingPath,
+  run: runStats(events, a.model, started),
 });
-console.log('\n' + md.split('\n## All pages opened')[0]);
+console.log('\n' + md.split('\n## 打开过的全部页面')[0]);
 console.log(`report: ${path.join(dir, 'coverage.md')}, ${path.join(dir, 'report.html')}`);
