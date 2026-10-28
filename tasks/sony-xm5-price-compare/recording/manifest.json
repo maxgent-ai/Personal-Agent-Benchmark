@@ -1,0 +1,14 @@
+{
+  "task_id": "sony-xm5-price-compare",
+  "captured_from": "2026-10-27T05:05:50.712Z",
+  "captured_to": "2026-10-27T11:53:00.337Z",
+  "not_found": {
+    "amazon.sg": "https://www.amazon.sg/rr-not-found-mvq82wb9",
+    "amazon": "https://www.amazon.com/rr-not-found-mvq84s5q",
+    "google.com": "https://www.google.com/rr-not-found-mvqmdb9h",
+    "bestbuy.com": "https://www.bestbuy.com/rr-not-found-mvqmdl83",
+    "sony.com": "https://electronics.sony.com/rr-not-found-mvqmehgm",
+    "adorama.com": "https://www.adorama.com/rr-not-found-mvqmfz2w"
+  },
+  "format": 2
+}

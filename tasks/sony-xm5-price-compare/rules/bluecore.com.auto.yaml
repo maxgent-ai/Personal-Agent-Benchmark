@@ -1,0 +1,10 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "bluecore.com", which takes precedence.
+site: bluecore.com
+hosts:
+  - bluecore.com
+  - "*.bluecore.com"
+drop_params:
+  - stats_type
+block:
+  - onsitestats.bluecore.com

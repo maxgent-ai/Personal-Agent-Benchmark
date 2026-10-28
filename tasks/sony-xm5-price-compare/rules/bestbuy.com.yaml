@@ -1,0 +1,42 @@
+site: bestbuy.com
+hosts:
+  - bestbuy.com
+  - "*.bestbuy.com"
+drop_params:
+  - b
+  - ts
+block:
+  - www.bestbuy.com/akam/13/pixel_5f6a3a96*
+  - streams.bestbuy.com/customer/web-streams/v1/events/deo-experiment-activations*
+  - streams.bestbuy.com/customer/web-streams/v1/events/cjc-page-requests*
+  - streams.bestbuy.com/customer/web-streams/v1/events/digital-experience-event*
+  - upa-logger.east.aws.openshift.bestbuy.com
+  # error-log beacons: no page content
+  - fel-api.prod.browse.bestbuy.com/exception*
+  - www.bestbuy.com/locationview/v1/api/log*
+endpoints:
+  - name: auto_page_1
+    match: GET /product/*/{id}/**
+    host: www.bestbuy.com
+    key: /product/{id}
+    keep_params: []
+  - name: auto_page_2
+    match: GET /product/{id}/**
+    host: www.bestbuy.com
+    key: /product/{id}
+    keep_params: []
+  - name: auto_suggest_7
+    match: GET /suggest/v1/fragment/suggest/www
+    host: www.bestbuy.com
+    kind: search
+    text_param: query
+    keep_params:
+      - query
+    similarity: 0.3
+  - name: auto_search_8
+    match: GET /site/searchpage.jsp
+    host: www.bestbuy.com
+    kind: search
+    text_param: st
+    keep_params:
+      - st

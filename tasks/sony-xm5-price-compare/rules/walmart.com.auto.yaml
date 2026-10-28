@@ -1,0 +1,22 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "walmart.com", which takes precedence.
+site: walmart.com
+hosts:
+  - walmart.com
+  - "*.walmart.com"
+drop_params:
+  - variables
+body_drop:
+  - bts
+block:
+  - www.walmart.com/akam/13/pixel_25047101*
+  - b.www.walmart.com/log.gif*
+  - b.www.walmart.com/rum.gif*
+endpoints:
+  - name: auto_search_9
+    match: GET /search
+    host: www.walmart.com
+    kind: search
+    text_param: q
+    keep_params:
+      - q

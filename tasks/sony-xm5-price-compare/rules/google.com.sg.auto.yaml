@@ -1,0 +1,33 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "google.com.sg", which takes precedence.
+site: google.com.sg
+hosts:
+  - google.com.sg
+  - "*.google.com.sg"
+drop_params:
+  - cerd
+  - cid
+  - crd
+  - data
+  - eid
+  - eitems
+  - en
+  - eoid
+  - ezwbk
+  - fsk
+  - fst
+  - gap.fsrc
+  - gap.last_label
+  - gap.last_random
+  - gcl_ctr
+  - gtm
+  - label
+  - num
+  - pscrd
+  - rcb
+  - ref
+  - tag_exp
+  - tiba
+  - url
+  - z
+  - random

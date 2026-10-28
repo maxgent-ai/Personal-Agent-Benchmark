@@ -1,0 +1,8 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "creativecdn.com", which takes precedence.
+site: creativecdn.com
+hosts:
+  - creativecdn.com
+  - "*.creativecdn.com"
+drop_params:
+  - tk

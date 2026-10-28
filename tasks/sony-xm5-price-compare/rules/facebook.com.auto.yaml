@@ -1,0 +1,31 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "facebook.com", which takes precedence.
+site: facebook.com
+hosts:
+  - facebook.com
+  - "*.facebook.com"
+drop_params:
+  - dl
+  - ec
+  - eid
+  - ev
+  - expv2[1]
+  - expv2[3]
+  - expv2[37]
+  - expv2[38]
+  - expv2[39]
+  - expv2[4]
+  - expv2[40]
+  - expv2[41]
+  - expv2[42]
+  - expv2[47]
+  - expv2[5]
+  - fbp
+  - id
+  - it
+  - o
+  - plt
+  - pmd[title]
+  - rl
+  - ss
+  - ts

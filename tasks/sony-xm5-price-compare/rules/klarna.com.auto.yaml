@@ -1,0 +1,8 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "klarna.com", which takes precedence.
+site: klarna.com
+hosts:
+  - klarna.com
+  - "*.klarna.com"
+drop_params:
+  - payment_amount

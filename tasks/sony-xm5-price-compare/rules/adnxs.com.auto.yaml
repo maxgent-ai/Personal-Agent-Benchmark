@@ -1,0 +1,9 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "adnxs.com", which takes precedence.
+site: adnxs.com
+hosts:
+  - adnxs.com
+  - "*.adnxs.com"
+drop_params:
+  - code
+  - entity

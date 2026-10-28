@@ -1,0 +1,13 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "quantummetric.com", which takes precedence.
+site: quantummetric.com
+hosts:
+  - quantummetric.com
+  - "*.quantummetric.com"
+drop_params:
+  - H
+  - v
+  - X
+  - t
+block:
+  - ingest.quantummetric.com/lgs/api/v1/logs*

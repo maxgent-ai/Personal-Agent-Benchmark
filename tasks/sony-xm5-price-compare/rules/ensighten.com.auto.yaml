@@ -1,0 +1,11 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "ensighten.com", which takes precedence.
+site: ensighten.com
+hosts:
+  - ensighten.com
+  - "*.ensighten.com"
+drop_params:
+  - d
+  - i
+  - n
+  - s

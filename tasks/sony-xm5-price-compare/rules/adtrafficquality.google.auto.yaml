@@ -1,0 +1,10 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "adtrafficquality.google", which takes precedence.
+site: adtrafficquality.google
+hosts:
+  - adtrafficquality.google
+  - "*.adtrafficquality.google"
+drop_params:
+  - bg
+  - jk
+  - li

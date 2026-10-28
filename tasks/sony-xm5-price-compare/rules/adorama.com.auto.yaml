@@ -1,0 +1,26 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "adorama.com", which takes precedence.
+site: adorama.com
+hosts:
+  - adorama.com
+  - "*.adorama.com"
+drop_params:
+  - dtm_promo_id
+  - _p
+  - ep.data
+  - pr1
+  - sst.tft
+  - _s
+  - cid
+  - en
+  - ep.site_type
+  - ets
+  - sid
+  - uri
+  - user_event
+  - cachebuster
+block:
+  - www.adorama.com/retail/events/v2/projects/prodc508ad3a/locations/global/catalogs/default_catalog/userEvents:collect*
+  - www.adorama.com/beacon/perf/navigation*
+  - www.adorama.com/beacon/affiliates*
+  - www.adorama.com/__ssobj/track*

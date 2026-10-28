@@ -1,0 +1,8 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "flashtalking.com", which takes precedence.
+site: flashtalking.com
+hosts:
+  - flashtalking.com
+  - "*.flashtalking.com"
+block:
+  - fdz.flashtalking.com

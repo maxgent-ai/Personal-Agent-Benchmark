@@ -1,0 +1,41 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "gstatic.com", which takes precedence.
+site: gstatic.com
+hosts:
+  - gstatic.com
+  - "*.gstatic.com"
+drop_params:
+  - url
+endpoints:
+  - name: auto_suggest_4
+    match: GET /images
+    host: encrypted-tbn0.gstatic.com
+    kind: search
+    text_param: q
+    keep_params:
+      - q
+    similarity: 0.3
+  - name: auto_suggest_5
+    match: GET /images
+    host: encrypted-tbn2.gstatic.com
+    kind: search
+    text_param: q
+    keep_params:
+      - q
+    similarity: 0.3
+  - name: auto_suggest_6
+    match: GET /images
+    host: encrypted-tbn3.gstatic.com
+    kind: search
+    text_param: q
+    keep_params:
+      - q
+    similarity: 0.3
+  - name: auto_suggest_7
+    match: GET /images
+    host: encrypted-tbn1.gstatic.com
+    kind: search
+    text_param: q
+    keep_params:
+      - q
+    similarity: 0.3

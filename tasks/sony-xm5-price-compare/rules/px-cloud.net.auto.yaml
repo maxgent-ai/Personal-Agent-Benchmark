@@ -1,0 +1,10 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "px-cloud.net", which takes precedence.
+site: px-cloud.net
+hosts:
+  - px-cloud.net
+  - "*.px-cloud.net"
+drop_params:
+  - c
+block:
+  - collector-pxu6b0qd2s.px-cloud.net/api/v2/collector*

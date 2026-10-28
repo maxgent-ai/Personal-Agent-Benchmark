@@ -1,0 +1,14 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "adroll.com", which takes precedence.
+site: adroll.com
+hosts:
+  - adroll.com
+  - "*.adroll.com"
+drop_params:
+  - adroll_external_data
+  - arrfrr
+  - cookie
+  - es
+  - esv
+  - ev
+  - ex

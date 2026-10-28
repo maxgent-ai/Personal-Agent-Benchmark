@@ -1,0 +1,39 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "doubleclick.net", which takes precedence.
+site: doubleclick.net
+hosts:
+  - doubleclick.net
+  - "*.doubleclick.net"
+drop_params:
+  - auid
+  - gtm
+  - google_hm
+  - cerd
+  - crd
+  - eid
+  - eitems
+  - eoid
+  - fsk
+  - fst
+  - gap.last_label
+  - gap.last_random
+  - gcl_ctr
+  - label
+  - num
+  - pscrd
+  - rcb
+  - ref
+  - tag_exp
+  - tiba
+  - url
+  - cisv
+  - ctpt
+  - sai
+  - sig
+  - xai
+  - correlator
+  - dlt
+  - dt
+  - lmt
+  - pvsid
+  - random

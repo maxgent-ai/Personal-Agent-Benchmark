@@ -1,0 +1,6 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "bestbuy.com", which takes precedence.
+site: bestbuy.com
+hosts: []
+drop_params:
+  - ts

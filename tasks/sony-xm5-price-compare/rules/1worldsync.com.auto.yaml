@@ -1,0 +1,8 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "1worldsync.com", which takes precedence.
+site: 1worldsync.com
+hosts:
+  - 1worldsync.com
+  - "*.1worldsync.com"
+block:
+  - ws.cs.1worldsync.com/log*

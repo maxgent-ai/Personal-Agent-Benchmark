@@ -1,0 +1,143 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "google.com", which takes precedence.
+site: google.com
+hosts:
+  - google.com
+  - "*.google.com"
+drop_params:
+  - _et
+  - _eu
+  - _s
+  - dl
+  - dt
+  - en
+  - ep.clientId
+  - ep.elementUrl
+  - ep.eventLabel
+  - ep.interaction_text
+  - ep.interaction_type
+  - ep.pageURL
+  - ep.timeStamp
+  - gtm
+  - tag_exp
+  - tfd
+  - adh
+  - adview_query_id
+  - ae
+  - aio
+  - apvc
+  - aqid
+  - astyp
+  - atyp
+  - auid
+  - cad
+  - cerd
+  - cid
+  - cls
+  - crd
+  - ct
+  - data
+  - dma
+  - dr
+  - dtc
+  - ei
+  - eid
+  - eitems
+  - eoid
+  - et
+  - fid
+  - fld
+  - folid
+  - fsk
+  - fst
+  - gap.fsrc
+  - gap.last_label
+  - gap.last_random
+  - gcd
+  - gcl_ctr
+  - gs_lcrp
+  - ima
+  - imac
+  - imad
+  - imeb
+  - imn
+  - label
+  - lpl
+  - lts
+  - m
+  - me
+  - mem
+  - mlro
+  - mrc
+  - navt
+  - net
+  - npa
+  - nt
+  - num
+  - nv
+  - ofp
+  - pscrd
+  - pv
+  - rcb
+  - ref
+  - reqpld
+  - rt
+  - s
+  - scrsrc
+  - stc
+  - sv
+  - tft
+  - thdba
+  - tiba
+  - tid
+  - tids
+  - ucb
+  - url
+  - ved
+  - vet
+  - zx
+  - random
+  - _p
+  - sid
+body_drop:
+  - "0"
+  - "3"
+block:
+  - play.google.com/log*
+  - www.google.com/ccm/collect*
+  - www.google.com/rmkt/collect/1066288264/*
+  - www.google.com/rmkt/collect/338926928/*
+  - www.google.com/rmkt/collect/11257230830/*
+  - analytics.google.com
+endpoints:
+  - name: auto_search_1
+    match: GET /search
+    host: www.google.com
+    kind: search
+    text_param: q
+    keep_params:
+      - q
+  - name: auto_suggest_2
+    match: GET /async/folsrch
+    host: www.google.com
+    kind: search
+    text_param: q
+    keep_params:
+      - q
+    similarity: 0.3
+  - name: auto_suggest_3
+    match: GET /complete/s
+    host: www.google.com
+    kind: search
+    text_param: q
+    keep_params:
+      - q
+    similarity: 0.3
+  - name: auto_suggest_8
+    match: GET /async/folif
+    host: www.google.com
+    kind: search
+    text_param: q
+    keep_params:
+      - q
+    similarity: 0.3

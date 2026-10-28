@@ -1,0 +1,13 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "openai.com", which takes precedence.
+site: openai.com
+hosts:
+  - openai.com
+  - "*.openai.com"
+drop_params:
+  - ec
+  - t
+body_drop:
+  - timestamp_ms
+block:
+  - bzrcdn.openai.com/pixel-config/v1/Cxs8vnS4GbQT24YCatasFx.json*

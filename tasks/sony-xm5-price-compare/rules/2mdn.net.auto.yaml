@@ -1,0 +1,8 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "2mdn.net", which takes precedence.
+site: 2mdn.net
+hosts:
+  - 2mdn.net
+  - "*.2mdn.net"
+drop_params:
+  - dclid
