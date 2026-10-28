@@ -33,6 +33,7 @@ src/               replay engine, whistle plugin, bundle format, CLI (pab)
 plugins/           whistle plugin package that loads the replay engine
 deploy/            replay and task images (built locally), a local Docker check
 docs/              task format, bundle format, site rules, deployment
+demo/              a minimal agent run against a task replay, with a report of what the recording missed
 ```
 
 ## Quick start
@@ -123,6 +124,7 @@ for evaluating agents. To have content removed, open an issue.
 - [docs/site-rules.md](docs/site-rules.md): request matching and site rules
 - [docs/grading.md](docs/grading.md): how answers to a task are scored
 - [docs/deploy.md](docs/deploy.md): replay and task images, what a platform running replays must ensure
+- [demo/README.md](demo/README.md): a minimal agent (pi with browser-use) run against a task replay
 
 ## License
 
