@@ -56,12 +56,12 @@ A grading needs at least one of `require`, `checks` or `trace`.
 
 ## Run report
 
-`pab grade <task> --log <replay-log.jsonl> --answer <file>` scores one run and writes two files
-side by side, every time:
+`pab grade <task> --log <replay-log.jsonl> --answer <file> [--run <file>]` scores one run and
+writes two files side by side, every time:
 
 - `result.json`: the score, the extracted fields, each item with its result and reason (expected
   and actual values, the LLM's reason, the matching request), the model that graded, the answer,
-  and the pages the agent opened.
+  the pages the agent opened, and how the run went when the harness says (`--run`).
 - `report.html`: the same, as a page to read, rendered from `result.json`.
 
 Pages are what the agent opened in a browser tab (`sec-fetch-dest: document` in the replay log),
@@ -70,6 +70,28 @@ per normalized key with the site, the route, the first URL and how many times it
 
 - `source: miss`: the recording has no copy. Recording the page lets a later run see it.
 - any other source: the site itself answered 404 while recording.
+
+`--run` takes a JSON file from the harness that ran the agent. The report shows it under 运行情况,
+with the duration worked out from the two times:
+
+```json
+{
+  "started": "2026-10-28T06:54:54.376Z",
+  "finished": "2026-10-28T06:56:23.042Z",
+  "steps": 8,
+  "model": "anthropic/claude-sonnet-5.5",
+  "tokens": { "input": 18, "output": 2915, "cache_read": 36495, "cache_write": 10202, "total": 49630 },
+  "cost_usd": 0.0583
+}
+```
+
+`started` is when the agent was given the task and `finished` when it answered; both are
+required. `steps` counts tool calls. `tokens` are summed over every model call, with `input`
+leaving out what was read from or written to the prompt cache.
+
+The report is in Chinese: the page, what the program tests and why an item failed, and the notes.
+The grader is told to give its reasons in Simplified Chinese. A check's test is its question as
+written in `grading.yaml`, so write the questions in Chinese.
 
 Without `--answer`, or for a task without `grading.yaml`, nothing is scored but both files are
 still written with the page list. When the grader fails, the files are written with a note and the
