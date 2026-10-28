@@ -1,22 +1,22 @@
-import type { ItemResult, PageResult, RunResult } from './scoring';
+import type { ItemResult, PageResult, RunResult, RunStats } from './scoring';
 
 /** report.html: a self-contained page rendered from result.json. */
 export function renderReport(r: RunResult): string {
   const title = r.task.title ?? r.task.id;
   const required = r.items.filter((i) => i.required);
   const weighted = r.items.filter((i) => !i.required);
-  const score = r.score === undefined ? 'not graded' : `${Math.round(r.score * 1000) / 10}%`;
+  const score = r.score === undefined ? '未评分' : `${Math.round(r.score * 1000) / 10}%`;
   const summary = [
-    required.length ? `required ${required.filter((i) => i.passed).length}/${required.length}` : '',
-    weighted.length ? `weighted ${weighted.filter((i) => i.passed).length}/${weighted.length}` : '',
-    `${r.pages.not_found.length} page${r.pages.not_found.length === 1 ? '' : 's'} returned 404`,
+    required.length ? `必过项 ${required.filter((i) => i.passed).length}/${required.length}` : '',
+    weighted.length ? `加分项 ${weighted.filter((i) => i.passed).length}/${weighted.length}` : '',
+    `${r.pages.not_found.length} 个页面返回 404`,
   ].filter(Boolean);
   return `<!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(title)} - run report</title>
+<title>${esc(title)} - 评测报告</title>
 <style>${CSS}</style>
 </head>
 <body>
@@ -24,45 +24,46 @@ export function renderReport(r: RunResult): string {
 <header>
   <p class="eyebrow">${esc(r.task.id)}</p>
   <h1>${esc(title)}</h1>
-  <p class="meta">graded ${esc(r.graded_at)}${r.grader ? ` by ${esc(r.grader.model)} (${esc(r.grader.via)})` : ''}${r.replay_log ? ` · replay log ${esc(r.replay_log)}` : ''}</p>
+  <p class="meta">评分时间 ${esc(r.graded_at)}${r.grader ? ` · 评分模型 ${esc(r.grader.model)}（${esc(r.grader.via)}）` : ''}${r.replay_log ? ` · 回放日志 ${esc(r.replay_log)}` : ''}</p>
 </header>
 <section class="score ${r.score === undefined ? 'none' : r.score > 0 ? 'ok' : 'bad'}">
   <div class="big">${esc(score)}</div>
   <div>${summary.map(esc).join(' · ')}</div>
 </section>
 ${r.notes.map((n) => `<p class="note">${esc(n)}</p>`).join('\n')}
+${r.run ? runSection(r.run) : ''}
 <section>
-  <h2>Pages that returned 404 <span class="count">${r.pages.not_found.length}</span></h2>
-  <p class="hint">Pages the agent opened in a tab during the replay (not frames, scripts or styles) that came back 404. "not recorded": the recording has no copy, so recording it would let the agent see it. "recorded as 404": the site itself answered 404 while recording.</p>
-  ${r.pages.not_found.length ? pageTable(r.pages.not_found, false) : '<p class="empty">None.</p>'}
+  <h2>返回 404 的页面 <span class="count">${r.pages.not_found.length}</span></h2>
+  <p class="hint">回放时 agent 在标签页里打开、结果返回 404 的页面（不含 iframe、脚本和样式）。“没有录制”：录制里没有这个页面，补录后 agent 就能看到；“录制时就是 404”：录制时网站本身返回的就是 404。</p>
+  ${r.pages.not_found.length ? pageTable(r.pages.not_found, false) : '<p class="empty">无。</p>'}
 </section>
 ${r.items.length ? `<section>
-  <h2>Items</h2>
+  <h2>评分项</h2>
   <div class="table"><table>
-    <thead><tr><th>Result</th><th>Item</th><th>Test</th><th>Reason</th></tr></thead>
+    <thead><tr><th>结果</th><th>评分项</th><th>检查内容</th><th>理由</th></tr></thead>
     <tbody>${r.items.map(itemRow).join('')}</tbody>
   </table></div>
 </section>` : ''}
 ${Object.keys(r.fields).length ? `<section>
-  <h2>Extracted fields</h2>
+  <h2>从回答中提取的字段</h2>
   <div class="table"><table>
-    <thead><tr><th>Field</th><th>Value</th></tr></thead>
-    <tbody>${Object.entries(r.fields).map(([k, v]) => `<tr><td><code>${esc(k)}</code></td><td>${v === null ? '<span class="muted">not stated</span>' : esc(JSON.stringify(v))}</td></tr>`).join('')}</tbody>
+    <thead><tr><th>字段</th><th>值</th></tr></thead>
+    <tbody>${Object.entries(r.fields).map(([k, v]) => `<tr><td><code>${esc(k)}</code></td><td>${v === null ? '<span class="muted">回答中没有</span>' : esc(JSON.stringify(v))}</td></tr>`).join('')}</tbody>
   </table></div>
 </section>` : ''}
 <section>
   <details>
-    <summary><h2>All pages opened <span class="count">${r.pages.opened.length}</span></h2></summary>
-    ${r.pages.opened.length ? pageTable(r.pages.opened, true) : '<p class="empty">None.</p>'}
+    <summary><h2>打开过的全部页面 <span class="count">${r.pages.opened.length}</span></h2></summary>
+    ${r.pages.opened.length ? pageTable(r.pages.opened, true) : '<p class="empty">无。</p>'}
   </details>
 </section>
 ${r.answer !== undefined ? `<section>
-  <h2>Agent answer</h2>
+  <h2>Agent 的回答</h2>
   <pre class="answer">${esc(r.answer)}</pre>
 </section>` : ''}
 ${r.task.prompt ? `<section>
   <details>
-    <summary><h2>Task</h2></summary>
+    <summary><h2>题目</h2></summary>
     <pre class="answer">${esc(r.task.prompt)}</pre>
   </details>
 </section>` : ''}
@@ -72,21 +73,54 @@ ${r.task.prompt ? `<section>
 `;
 }
 
+function runSection(s: RunStats): string {
+  const n = (x: number) => x.toLocaleString('en-US');
+  const rows: [string, string | undefined][] = [
+    ['模型', s.model],
+    ['开始', clock(s.started)],
+    ['完成', clock(s.finished)],
+    ['用时', s.duration_ms === undefined ? undefined : duration(s.duration_ms)],
+    ['步数', s.steps === undefined ? undefined : String(s.steps)],
+    ['Token 合计', s.tokens && n(s.tokens.total)],
+    ['输入（不含缓存）', s.tokens && n(s.tokens.input)],
+    ['缓存读取', s.tokens?.cache_read === undefined ? undefined : n(s.tokens.cache_read)],
+    ['缓存写入', s.tokens?.cache_write === undefined ? undefined : n(s.tokens.cache_write)],
+    ['输出', s.tokens && n(s.tokens.output)],
+    ['费用', s.cost_usd === undefined ? undefined : `$${s.cost_usd.toFixed(4)}`],
+  ];
+  return `<section>
+  <h2>运行情况</h2>
+  <p class="hint">从 agent 收到题目到给出回答，由运行 agent 的程序统计。</p>
+  <div class="table"><table class="facts"><tbody>${rows.filter(([, v]) => v !== undefined).map(([k, v]) => `<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join('')}</tbody></table></div>
+</section>`;
+}
+
+const clock = (iso: string) => `${iso.slice(0, 10)} ${iso.slice(11, 19)} UTC`;
+
+function duration(ms: number): string {
+  if (ms < 60_000) return `${Math.round(ms / 100) / 10} 秒`;
+  const s = Math.round(ms / 1000);
+  return `${Math.floor(s / 60)} 分 ${s % 60} 秒`;
+}
+
 function itemRow(i: ItemResult): string {
-  const tag = i.required ? 'required' : `weight ${i.weight}`;
+  const tag = i.required ? '必过' : `权重 ${i.weight}`;
   return `<tr class="${i.passed ? 'pass' : 'fail'}">
-    <td><span class="badge">${i.passed ? 'pass' : 'fail'}</span></td>
-    <td><code>${esc(i.id)}</code><div class="muted">${esc(i.kind)} · ${esc(tag)}</div></td>
+    <td><span class="badge">${i.passed ? '通过' : '不通过'}</span></td>
+    <td><code>${esc(i.id)}</code><div class="muted">${esc(KIND[i.kind])} · ${esc(tag)}</div></td>
     <td>${esc(i.test)}</td>
     <td>${esc(i.reason)}</td>
   </tr>`;
 }
 
-const SOURCE: Record<string, string> = { miss: 'not recorded', blocked: 'blocked by a rule' };
+const KIND: Record<ItemResult['kind'], string> = { require: '程序比对', check: '模型判断', trace: '请求记录' };
+
+/** How replay answered a page (PageResult.source). */
+const SOURCE: Record<string, string> = { exact: '精确命中', fuzzy: '相近页面', search: '相近搜索词', promo: '优惠码录制', blocked: '被规则拦截', miss: '没有录制' };
 
 function pageTable(pages: PageResult[], all: boolean): string {
   const rows = pages.map((p) => {
-    const how = p.status === 404 ? (p.source === 'miss' ? 'not recorded' : 'recorded as 404') : SOURCE[p.source] ?? p.source;
+    const how = p.status === 404 ? (p.source === 'miss' ? '没有录制' : '录制时就是 404') : SOURCE[p.source] ?? p.source;
     return `<tr${p.status === 404 ? ' class="fail"' : ''}>
       ${all ? `<td>${p.status}</td>` : ''}
       <td>${esc(p.site)}</td>
@@ -97,7 +131,7 @@ function pageTable(pages: PageResult[], all: boolean): string {
     </tr>`;
   });
   return `<div class="table"><table>
-    <thead><tr>${all ? '<th>Status</th>' : ''}<th>Site</th><th>Route</th><th>Times</th><th>${all ? 'Answered' : 'Why'}</th><th>First</th></tr></thead>
+    <thead><tr>${all ? '<th>状态</th>' : ''}<th>站点</th><th>路由</th><th>次数</th><th>${all ? '应答方式' : '原因'}</th><th>首次打开</th></tr></thead>
     <tbody>${rows.join('')}</tbody>
   </table></div>`;
 }
@@ -132,6 +166,8 @@ th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom
 th { font-size: 12px; font-weight: 600; color: var(--muted); white-space: nowrap; }
 tbody tr:last-child td { border-bottom: 0; }
 td.num { text-align: right; font-variant-numeric: tabular-nums; }
+table.facts th { width: 160px; font-size: 13px; font-weight: 500; }
+table.facts td { font-variant-numeric: tabular-nums; }
 .route { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; word-break: break-all; }
 .url { font-size: 11.5px; word-break: break-all; margin-top: 2px; }
 code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; background: var(--code); padding: 1px 5px; border-radius: 4px; }

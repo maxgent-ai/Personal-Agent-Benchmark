@@ -50,8 +50,25 @@ export interface PageResult {
   first: string;
 }
 
+/** How the agent's run went, as counted by the harness that ran it. */
+export interface RunStats {
+  /** When the agent was given the task and when it gave its answer (ISO times). */
+  started: string;
+  finished: string;
+  /** finished minus started; scoreRun fills it in. */
+  duration_ms?: number;
+  /** Tool calls the agent made. */
+  steps?: number;
+  model?: string;
+  /** Over all model calls; input leaves out what was read from or written to the prompt cache. */
+  tokens?: { input: number; output: number; cache_read?: number; cache_write?: number; total: number };
+  cost_usd?: number;
+}
+
 export interface RunResult {
   task: { id: string; title?: string; prompt?: string };
+  /** Absent when the harness gave none. */
+  run?: RunStats;
   graded_at: string;
   replay_log?: string;
   answer?: string;
@@ -75,12 +92,14 @@ export interface RunInput {
   /** Each site's recorded 404 page (manifest not_found): recorder probes, not pages anyone opened. */
   probes?: string[];
   judge?: Judge;
+  run?: RunStats;
 }
 
 export async function scoreRun(input: RunInput): Promise<RunResult> {
   const { grading, answer } = input;
   const result: RunResult = {
     task: input.task,
+    ...(input.run ? { run: { ...input.run, duration_ms: Date.parse(input.run.finished) - Date.parse(input.run.started) } } : {}),
     graded_at: new Date().toISOString(),
     replay_log: input.logFile,
     answer,
@@ -90,11 +109,11 @@ export async function scoreRun(input: RunInput): Promise<RunResult> {
     notes: [],
   };
   if (!grading) {
-    result.notes.push('not graded: the task has no grading.yaml');
+    result.notes.push('未评分：题目没有 grading.yaml');
     return result;
   }
   if (answer === undefined) {
-    result.notes.push('not graded: no answer was given (--answer)');
+    result.notes.push('未评分：没有提供回答（--answer）');
     return result;
   }
   const extract = grading.extract ?? {};
@@ -108,7 +127,7 @@ export async function scoreRun(input: RunInput): Promise<RunResult> {
       reply = asked.output as JudgeReply;
       result.grader.model = asked.model;
     } catch (err) {
-      result.notes.push(`not graded: the grader failed (${(err as Error).message})`);
+      result.notes.push(`未评分：评分模型出错（${(err as Error).message}）`);
       return result;
     }
   }
@@ -128,15 +147,15 @@ export async function scoreRun(input: RunInput): Promise<RunResult> {
       required: !weighted,
       ...(weighted ? { weight: c.weight } : {}),
       passed: got?.pass === true,
-      reason: got?.reason ?? 'the grader gave no answer',
+      reason: got?.reason ?? '评分模型没有给出判断',
     });
   }
   for (const t of grading.trace ?? []) {
     const rule = (t.must ?? t.must_not)!;
     const found = input.log.filter((r) => matches(r, rule));
-    const first = found[0] && `${found[0].method} ${found[0].url}${found.length > 1 ? ` (and ${found.length - 1} more)` : ''}`;
+    const first = found[0] && `${found[0].method} ${found[0].url}${found.length > 1 ? `（另有 ${found.length - 1} 条）` : ''}`;
     const passed = t.must ? found.length > 0 : found.length === 0;
-    result.items.push({ kind: 'trace', id: t.id, test: `${t.must ? 'must' : 'must not'} request ${matchText(rule)}`, required: true, passed, reason: first ?? 'no such request' });
+    result.items.push({ kind: 'trace', id: t.id, test: `${t.must ? '必须' : '不得'}请求 ${matchText(rule)}`, required: true, passed, reason: first ?? '没有这样的请求' });
   }
   result.score = score(result.items);
   return result;
@@ -206,6 +225,7 @@ const SYSTEM = [
   'Extract the listed fields from the answer and answer each yes/no question about the answer.',
   'Take values only from what the answer says; when the answer does not state a field, return null for it.',
   'For each question give a short reason first, quoting or pointing to the part of the answer it rests on, then pass: true for yes and false for no.',
+  'Write every reason in Simplified Chinese; quote the answer as it is.',
 ].join(' ');
 
 const JSON_TYPE: Record<FieldType, string> = { money: 'number', number: 'number', text: 'string', boolean: 'boolean' };
@@ -238,17 +258,17 @@ const squash = (s: unknown) => String(s).replace(/\s+/g, ' ').trim().toLowerCase
 
 function describe(r: Requirement): string {
   const parts: string[] = [];
-  if (r.equals !== undefined) parts.push(`equals ${r.equals}${r.tolerance !== undefined ? ` (±${r.tolerance})` : ''}`);
-  if (r.min !== undefined) parts.push(`at least ${r.min}`);
-  if (r.max !== undefined) parts.push(`at most ${r.max}`);
-  if (r.one_of !== undefined) parts.push(`one of ${r.one_of.join(', ')}`);
-  if (r.contains !== undefined) parts.push(`contains "${r.contains}"`);
-  return `${r.field} ${parts.join(', ')}`;
+  if (r.equals !== undefined) parts.push(`等于 ${r.equals}${r.tolerance !== undefined ? `（±${r.tolerance}）` : ''}`);
+  if (r.min !== undefined) parts.push(`至少 ${r.min}`);
+  if (r.max !== undefined) parts.push(`至多 ${r.max}`);
+  if (r.one_of !== undefined) parts.push(`为其中之一：${r.one_of.join('、')}`);
+  if (r.contains !== undefined) parts.push(`包含“${r.contains}”`);
+  return `${r.field} ${parts.join('，')}`;
 }
 
 function compare(r: Requirement, type: FieldType, value: unknown): { passed: boolean; reason: string } {
-  if (value === null || value === undefined) return { passed: false, reason: 'not stated in the answer' };
-  const got = `got ${JSON.stringify(value)}`;
+  if (value === null || value === undefined) return { passed: false, reason: '回答中没有给出' };
+  const got = `回答给出 ${JSON.stringify(value)}`;
   if (type === 'money' || type === 'number') {
     const v = Number(value);
     const tol = r.tolerance ?? 0.01;
@@ -270,4 +290,4 @@ function matches(r: LogLine, m: RequestMatch): boolean {
   return globToRegExp(m.url).test(r.url);
 }
 
-const matchText = (m: RequestMatch) => `${m.method ? `${m.method.toUpperCase()} ` : ''}${m.url}${m.hit ? ' (answered from the recording)' : ''}`;
+const matchText = (m: RequestMatch) => `${m.method ? `${m.method.toUpperCase()} ` : ''}${m.url}${m.hit ? '（由录制应答）' : ''}`;

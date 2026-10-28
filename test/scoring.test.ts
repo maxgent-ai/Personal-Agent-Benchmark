@@ -67,6 +67,8 @@ test('a run is scored from the answer and the replay log; only pages in tabs tha
   assert.deepEqual(schema.properties.fields.required, ['price']);
   assert.deepEqual(schema.properties.checks.required, ['right_product', 'shipping', 'coupons']);
   assert.match(asked[0].prompt, /Find the lowest price/);
+  // reports are read in Chinese
+  assert.match(asked[0].system, /reason in Simplified Chinese/);
 
   const notFound = r.pages.not_found.map((p) => `${p.route} x${p.count} ${p.source}`);
   assert.deepEqual(notFound, ['shop.test/p/123 x2 miss', 'shop.test/gone x1 exact', 'shop.test/old-log-page x1 miss']);
@@ -78,14 +80,14 @@ test('a run is scored from the answer and the replay log; only pages in tabs tha
 test('a failed required item scores 0; a missing value fails its requirement', async () => {
   const r = await run(stubJudge({ fields: { price: null }, checks: { right_product: { reason: 'ok', pass: true }, shipping: { reason: 'ok', pass: true }, coupons: { reason: 'ok', pass: true } } }));
   assert.equal(r.score, 0);
-  assert.deepEqual(r.items[0], { kind: 'require', id: 'price', test: 'price equals 278', required: true, passed: false, reason: 'not stated in the answer' });
+  assert.deepEqual(r.items[0], { kind: 'require', id: 'price', test: 'price 等于 278', required: true, passed: false, reason: '回答中没有给出' });
 });
 
 test('result.json and report.html are written together, even when the run could not be graded', async () => {
   const failing: Judge = { via: 'stub', model: 'stub-model', ask: async () => { throw new Error('network down'); } };
   const r = await run(failing);
   assert.equal(r.score, undefined);
-  assert.match(r.notes.join(), /the grader failed \(network down\)/);
+  assert.match(r.notes.join(), /评分模型出错（network down）/);
   assert.equal(r.pages.not_found.length, 3);
 
   const dir = tmpDir();
@@ -93,15 +95,32 @@ test('result.json and report.html are written together, even when the run could 
   const saved = JSON.parse(fs.readFileSync(files.json, 'utf8'));
   assert.deepEqual(saved.pages, r.pages);
   const html = fs.readFileSync(files.html, 'utf8');
-  assert.match(html, /Pages that returned 404/);
+  assert.match(html, /返回 404 的页面/);
   assert.match(html, /shop\.test\/p\/123/);
-  assert.match(html, /not recorded/);
-  assert.match(html, /recorded as 404/);
+  assert.match(html, /没有录制/);
+  assert.match(html, /录制时就是 404/);
   assert.match(html, /&lt;b&gt;with free shipping&lt;\/b&gt;/);
   assert.doesNotMatch(html, /app\.js|site\.css|ads\.test/);
 
   const ungraded = await scoreRun({ task: { id: 'shop' }, log: LOG, rules: RuleSet.load([]) });
-  assert.match(ungraded.notes.join(), /no grading\.yaml/);
+  assert.match(ungraded.notes.join(), /没有 grading\.yaml/);
+});
+
+test('the run the harness reports is kept with its duration and shown in the report', async () => {
+  const run = { started: '2026-11-05T10:00:00.000Z', finished: '2026-11-05T10:02:05.400Z', steps: 8, model: 'some/model', tokens: { input: 18, output: 2915, cache_read: 36495, cache_write: 10202, total: 49630 }, cost_usd: 0.0583 };
+  const r = await scoreRun({ task: { id: 'shop' }, log: LOG, rules: RuleSet.load([]), run });
+  assert.deepEqual(r.run, { ...run, duration_ms: 125_400 });
+
+  const html = fs.readFileSync(writeRun(r, path.join(tmpDir(), 'run')).html, 'utf8');
+  assert.match(html, /运行情况/);
+  assert.match(html, /2026-11-05 10:02:05 UTC/);
+  assert.match(html, /2 分 5 秒/);
+  assert.match(html, /49,630/);
+  assert.match(html, /\$0\.0583/);
+
+  const without = await scoreRun({ task: { id: 'shop' }, log: LOG, rules: RuleSet.load([]) });
+  assert.equal(without.run, undefined);
+  assert.doesNotMatch(fs.readFileSync(writeRun(without, path.join(tmpDir(), 'run')).html, 'utf8'), /运行情况/);
 });
 
 test('the replay log tells pages in tabs from frames, so a replay run lists its own 404 pages', async () => {

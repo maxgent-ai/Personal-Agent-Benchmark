@@ -49,11 +49,15 @@ Each run writes `runs/<task>-<time>/`:
 | File | What it is |
 |---|---|
 | `coverage.md` | pages the replay did not answer properly, similar-page answers, API calls missing from the recording, and every page opened |
-| `report.html`, `result.json` | the benchmark's run report (`pab grade`'s format; graded only when the task has `grading.yaml`) |
+| `report.html`, `result.json` | the benchmark's run report (`pab grade`'s format): the score when the task has `grading.yaml`, and the run's times, steps, tokens and cost |
 | `replay.jsonl` | the replay log |
 | `transcript.jsonl`, `answer.md` | the agent's steps and final answer |
 
 `node report.ts runs/<run>` rebuilds the reports of an earlier run.
+
+When the task has `grading.yaml`, the answer is graded the way `pab grade` does it: Claude answers
+the checks, through a signed-in local `claude` CLI, or the Claude API when `ANTHROPIC_API_KEY` is
+set ([docs/grading.md](../docs/grading.md)).
 
 A page counts as not answered properly when it is not in the recording (the site's 404 page), or
 when its recorded copy has no response or is a 403/429/503 page.

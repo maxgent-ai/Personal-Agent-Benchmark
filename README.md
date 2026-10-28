@@ -87,14 +87,15 @@ The replay engine, the recording format and the `pab` command are published to n
 `personal-agent-benchmark`; tasks are not part of the package.
 
 ```bash
-npm install personal-agent-benchmark@0.2.0
+npm install personal-agent-benchmark@0.3.0
 npx pab replay path/to/tasks/<id>
 ```
 
 Modules are imported by path, for example `personal-agent-benchmark/scoring` or
 `personal-agent-benchmark/core/rules`; `exports` in `package.json` lists them. While the version
-is 0.x, a new minor version may change them. 0.1.x and 0.2.x read and write recordings in format 2
-([docs/bundle-format.md](docs/bundle-format.md)); a new format comes with a new minor version.
+is 0.x, a new minor version may change them. 0.1.x, 0.2.x and 0.3.x read and write recordings in
+format 2 ([docs/bundle-format.md](docs/bundle-format.md)); a new format comes with a new minor
+version.
 
 ## Tasks
 

@@ -13,7 +13,7 @@ import { parseGrading, validateGrading, type Grading } from './grading';
 import { pickJudge } from './judge';
 import type { ReplayStats } from './replay/engine';
 import { startReplayServer } from './replay/launcher';
-import { scoreRun, writeRun, type LogLine } from './scoring';
+import { scoreRun, writeRun, type LogLine, type RunStats } from './scoring';
 import { Repo, resolveTarget, type ReplayTarget } from './tasks';
 
 const HELP = `pab - Personal Agent Benchmark: replay real-site tasks offline
@@ -27,9 +27,10 @@ const HELP = `pab - Personal Agent Benchmark: replay real-site tasks offline
   pab audit [<task>...]                      check recordings are safe to publish (all tasks by default)
   pab unpack <task>                          unpack the recording and print its directory
   pab stats <replay-log.jsonl>               summarize a replay log
-  pab grade <task> --log <replay-log.jsonl> [--answer FILE] [--out DIR] [--judge api|cli] [--model M]
+  pab grade <task> --log <replay-log.jsonl> [--answer FILE] [--run FILE] [--out DIR] [--judge api|cli] [--model M]
                                              score a run and list the pages that returned 404;
-                                             writes result.json and report.html
+                                             writes result.json and report.html; --run: the run's
+                                             times, steps, tokens and cost (docs/grading.md)
 
 <task> is a task id, a task directory, or an unpacked bundle directory.
 --repo DIR (or PAB_REPO) points at another checkout of this repository.
@@ -248,6 +249,9 @@ async function cmdGrade(positional: string[], flags: Args['flags']): Promise<voi
     if (errors.length) throw new Error(`${task.gradingPath}:\n  ${errors.join('\n  ')}`);
   }
   const answer = str(flags.answer) ? fs.readFileSync(str(flags.answer)!, 'utf8') : undefined;
+  const runFile = str(flags.run);
+  const run = runFile ? (JSON.parse(fs.readFileSync(runFile, 'utf8')) as RunStats) : undefined;
+  if (run && (Number.isNaN(Date.parse(run.started)) || Number.isNaN(Date.parse(run.finished)))) throw new Error(`${runFile}: started and finished must be ISO times`);
   const result = await scoreRun({
     task: { id: card?.id ?? target.name, title: card?.title, prompt: card?.prompt },
     grading,
@@ -257,6 +261,7 @@ async function cmdGrade(positional: string[], flags: Args['flags']): Promise<voi
     rules,
     probes: Object.values(bundle.manifest().not_found ?? {}),
     judge: grading && answer !== undefined ? pickJudge(str(flags.judge), str(flags.model)) : undefined,
+    run,
   });
   const out = str(flags.out) ?? path.join(repo.cacheDir, 'runs', `${target.name}-${new Date().toISOString().replace(/[:.]/g, '-')}`);
   const files = writeRun(result, out);
