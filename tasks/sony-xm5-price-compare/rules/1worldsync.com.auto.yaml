@@ -4,5 +4,9 @@ site: 1worldsync.com
 hosts:
   - 1worldsync.com
   - "*.1worldsync.com"
+drop_params:
+  - PId
+  - ResultCode
+  - ServerTime
 block:
   - ws.cs.1worldsync.com/log*

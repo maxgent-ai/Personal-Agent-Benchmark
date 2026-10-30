@@ -32,8 +32,11 @@ drop_params:
   - sig
   - xai
   - correlator
+  - dett
   - dlt
   - dt
   - lmt
   - pvsid
+  - uach
+  - vrg
   - random

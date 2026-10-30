@@ -1,0 +1,8 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "everesttech.net", which takes precedence.
+site: everesttech.net
+hosts:
+  - everesttech.net
+  - "*.everesttech.net"
+drop_params:
+  - d_uuid

@@ -1,0 +1,7 @@
+# These exact keys have an earlier redirect or empty failed response.
+# Prefer their later valid HTTPS product page and product image recordings.
+site: _default
+hosts: []
+latest:
+  - electronics.sony.com/audio/headphones/headband/p/wh1000xm5-b
+  - d1ncau8tqf99kp.cloudfront.net/converted/103364_original_local_1200x1050_v3_converted.webp

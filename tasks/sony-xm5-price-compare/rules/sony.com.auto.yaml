@@ -7,10 +7,10 @@ hosts:
 drop_params:
   - code
   - fields.productCodes
-  - productCode
   - target
 block:
   - electronics.sony.com/akam/13/pixel_69ce8a4*
+  - electronics.sony.com/akam/13/pixel_235df4cb*
 endpoints:
   - name: auto_suggest_10
     match: GET /api/occ/v2/sna/products/search

@@ -1,0 +1,17 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "newegg.com", which takes precedence.
+site: newegg.com
+hosts:
+  - newegg.com
+  - "*.newegg.com"
+drop_params:
+  - ranSiteID
+  - _
+body_drop:
+  - startTime
+  - "@timestamp"
+block:
+  - www.newegg.com/cdn-cgi/rum*
+  - secure.newegg.com/cdn-cgi/rum*
+  - ec-apis.newegg.com/amber3/tracking*
+  - pf.newegg.com

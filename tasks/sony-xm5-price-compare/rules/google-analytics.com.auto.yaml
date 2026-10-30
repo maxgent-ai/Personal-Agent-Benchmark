@@ -5,11 +5,27 @@ hosts:
   - google-analytics.com
   - "*.google-analytics.com"
 drop_params:
+  - _et
   - _eu
-  - _s
-  - en
-  - gtm
-  - seg
-  - tfd
   - _p
+  - _s
+  - cid
+  - dl
+  - dr
+  - dt
+  - en
+  - ep.eventLabel
+  - ep.pageURL
+  - ep.timeStamp
+  - gcd
+  - gcs
+  - gtm
+  - rcb
+  - seg
   - sid
+  - tag_exp
+  - tcfd
+  - tfd
+  - tid
+  - uapv
+  - ul

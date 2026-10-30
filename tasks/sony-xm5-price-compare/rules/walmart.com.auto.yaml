@@ -10,6 +10,8 @@ body_drop:
   - bts
 block:
   - www.walmart.com/akam/13/pixel_25047101*
+  - www.walmart.com/akam/13/pixel_7beb2b17*
+  - www.walmart.com/px/PXu6b0qd2S/captcha/captcha.js*
   - b.www.walmart.com/log.gif*
   - b.www.walmart.com/rum.gif*
 endpoints:

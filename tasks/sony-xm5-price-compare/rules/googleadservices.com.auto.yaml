@@ -6,13 +6,28 @@ hosts:
   - "*.googleadservices.com"
 drop_params:
   - adview_query_id
+  - auid
+  - dt
+  - fmt
   - fst
+  - gap.gtb
   - gap.last_label
   - gap.last_random
+  - gcd
   - gcl_ctr
+  - gdid
+  - gtb
+  - gtm
   - label
+  - navt
   - oid
+  - rcb
+  - scrsrc
+  - tag_exp
+  - tfd
+  - tft
   - tiba
+  - tid
+  - tids
   - url
   - random
-  - tft
