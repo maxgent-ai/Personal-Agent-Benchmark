@@ -1,0 +1,22 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "target.com", which takes precedence.
+site: target.com
+hosts:
+  - target.com
+  - "*.target.com"
+drop_params:
+  - field_groups
+block:
+  - api.target.com/firefly_events/v1/events/third_party_tags*
+  - api.target.com/firefly_events/v1/events/tags_page_view*
+endpoints:
+  - name: auto_page_1
+    match: GET /p/*/-/{id}/**
+    host: www.target.com
+    key: /p/-/{id}
+    keep_params: []
+  - name: auto_page_2
+    match: GET /p/-/{id}/**
+    host: www.target.com
+    key: /p/-/{id}
+    keep_params: []

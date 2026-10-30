@@ -1,0 +1,43 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "ebay.com", which takes precedence.
+site: ebay.com
+hosts:
+  - ebay.com
+  - "*.ebay.com"
+drop_params:
+  - ct
+  - pld
+  - trknvp
+  - _vrdm
+  - g
+  - ord
+  - pid
+  - ticket
+  - st
+  - cg
+body_drop:
+  - timestamp
+  - openTime
+block:
+  - www.ebay.com/blueberry/v1/ads/identity/pixelUrls*
+  - www.ebay.com/gh/di/monitoring/metrics*
+  - www.ebay.com/chocolatechip/track*
+  - sherlock-events-sampler.ebay.com/eventsPerServiceStrategy*
+  - svcs.ebay.com/ufeservice/v1/metrics*
+  - edgetrksvc.ebay.com
+endpoints:
+  - name: auto_page_3
+    match: GET /b/*/{id}/**
+    host: www.ebay.com
+    key: /b/{id}
+    keep_params: []
+  - name: auto_page_4
+    match: GET /b/{id}/**
+    host: www.ebay.com
+    key: /b/{id}
+    keep_params: []
+  - name: auto_page_5
+    match: GET /itm/{id}/**
+    host: www.ebay.com
+    key: /itm/{id}
+    keep_params: []

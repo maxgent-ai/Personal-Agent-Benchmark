@@ -1,0 +1,7 @@
+# Preserve the task's existing CSP report normalization after recording imports.
+site: withgoogle.com
+hosts:
+  - withgoogle.com
+  - "*.withgoogle.com"
+body_drop:
+  - original-policy

@@ -1,0 +1,9 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "ebay-us.com", which takes precedence.
+site: ebay-us.com
+hosts:
+  - ebay-us.com
+  - "*.ebay-us.com"
+drop_params:
+  - jb
+  - je

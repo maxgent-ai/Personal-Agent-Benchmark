@@ -21,24 +21,29 @@ drop_params:
   - gtm
   - tag_exp
   - tfd
+  - aavs
   - adh
   - adview_query_id
   - ae
   - aio
+  - ant
   - apvc
   - aqid
   - astyp
   - atyp
   - auid
+  - bl
   - cad
   - cerd
   - cid
   - cls
   - crd
+  - cs
   - ct
   - data
   - dma
   - dr
+  - dt19
   - dtc
   - ei
   - eid
@@ -51,16 +56,21 @@ drop_params:
   - fsk
   - fst
   - gap.fsrc
+  - gap.gtb
   - gap.last_label
   - gap.last_random
   - gcd
   - gcl_ctr
+  - gdid
   - gs_lcrp
+  - gtb
   - ima
   - imac
   - imad
   - imeb
+  - imeh
   - imn
+  - jsi
   - label
   - lpl
   - lts
@@ -78,11 +88,13 @@ drop_params:
   - ofp
   - pscrd
   - pv
+  - pvt
   - rcb
   - ref
   - reqpld
   - rt
   - s
+  - sca_esv
   - scrsrc
   - stc
   - sv
@@ -95,6 +107,7 @@ drop_params:
   - url
   - ved
   - vet
+  - vt
   - zx
   - random
   - _p

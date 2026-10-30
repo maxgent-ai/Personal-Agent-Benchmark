@@ -1,0 +1,70 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "dv.tech", which takes precedence.
+site: dv.tech
+hosts:
+  - dv.tech
+  - "*.dv.tech"
+drop_params:
+  - adfnd
+  - adhgt
+  - adwdth
+  - b0
+  - b1
+  - b11
+  - chgt
+  - cwdth
+  - dvp_vsosnmr
+  - ee_dp_btadsrv
+  - ee_dp_btreg
+  - ee_dp_m50invnprms
+  - ee_dp_sah
+  - ee_dp_saw
+  - ee_dp_tmads
+  - engalms
+  - eoid
+  - iabv5
+  - impid
+  - isbxdms
+  - isgmmims
+  - isgmpims
+  - isgmv4dpims
+  - isgmv4mims
+  - isiabvms
+  - ismms
+  - ispmxpms
+  - isuiabvms
+  - isumms
+  - ivsos
+  - lftb
+  - m50invms
+  - nvr
+  - sftb
+  - tetms
+  - tltms
+  - tmet
+  - ttfurm
+  - tuums
+  - tuviems
+  - tuviims
+  - vct
+  - vdur
+  - vetms
+  - vltms
+  - vphgt
+  - vsos
+  - vstsz
+  - cd107
+  - cd111
+  - cd160
+  - cid
+  - cm107
+  - cm108
+  - cm110
+  - cm111
+  - cm112
+  - cm113
+  - cm115
+  - cm117
+  - z
+block:
+  - maestro-ae1.tps.dv.tech

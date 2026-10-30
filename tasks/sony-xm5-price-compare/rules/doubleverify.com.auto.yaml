@@ -1,0 +1,17 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "doubleverify.com", which takes precedence.
+site: doubleverify.com
+hosts:
+  - doubleverify.com
+  - "*.doubleverify.com"
+drop_params:
+  - btadsrv
+  - btreg
+  - dvp_qtpid
+  - dvp_tuid
+  - dvp_uptpid
+  - dvp_uptsid
+  - jsCallback
+  - litm
+  - scrt
+  - uid

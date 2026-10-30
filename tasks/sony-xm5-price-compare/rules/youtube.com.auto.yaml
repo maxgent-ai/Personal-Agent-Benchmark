@@ -1,0 +1,10 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "youtube.com", which takes precedence.
+site: youtube.com
+hosts:
+  - youtube.com
+  - "*.youtube.com"
+body_drop:
+  - eventTimeMs
+block:
+  - www.youtube.com/youtubei/v1/log_event*

@@ -1,0 +1,20 @@
+# These exact paths returned bot checks in the 2026-10-30 supplemental capture.
+# Do not publish a challenge page or use one as the site's missing-page fallback.
+site: _default
+hosts: []
+exclude:
+  - www.walmart.com/blocked
+  - www.walmart.com/rr-not-found-mvuflfsg
+  - camelcamelcamel.com/product/B09XS7JWHH
+  - camelcamelcamel.com/favicon.ico
+  - camelcamelcamel.com/rr-not-found-mvufzbza
+  - www.bhphotovideo.com/c/product/1706293-REG/sony_6505727_sony_wh_1000xm5_wireless_noise_canceling.html
+  - www.bhphotovideo.com/favicon.ico
+  - www.bhphotovideo.com/rr-not-found-mvug36g9
+  - www.crutchfield.com/p_158100XM5B/Sony-WH-1000XM5-Black.html
+  - www.crutchfield.com/rr-not-found-mvug4cnw
+  # Dedicated verification resources have no product or comparison content.
+  - challenges.cloudflare.com
+  - "*.challenges.cloudflare.com"
+  - js.hcaptcha.com
+  - "*/cdn-cgi/challenge-platform/**"

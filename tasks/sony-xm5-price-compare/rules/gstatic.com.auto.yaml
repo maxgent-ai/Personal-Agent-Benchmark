@@ -4,8 +4,6 @@ site: gstatic.com
 hosts:
   - gstatic.com
   - "*.gstatic.com"
-drop_params:
-  - url
 endpoints:
   - name: auto_suggest_4
     match: GET /images
@@ -34,6 +32,54 @@ endpoints:
   - name: auto_suggest_7
     match: GET /images
     host: encrypted-tbn1.gstatic.com
+    kind: search
+    text_param: q
+    keep_params:
+      - q
+    similarity: 0.3
+  - name: auto_suggest_13
+    match: GET /favicon-tbn
+    host: encrypted-tbn3.gstatic.com
+    kind: search
+    text_param: q
+    keep_params:
+      - q
+    similarity: 0.3
+  - name: auto_suggest_14
+    match: GET /shopping
+    host: encrypted-tbn3.gstatic.com
+    kind: search
+    text_param: q
+    keep_params:
+      - q
+    similarity: 0.3
+  - name: auto_suggest_15
+    match: GET /favicon-tbn
+    host: encrypted-tbn1.gstatic.com
+    kind: search
+    text_param: q
+    keep_params:
+      - q
+    similarity: 0.3
+  - name: auto_suggest_16
+    match: GET /shopping
+    host: encrypted-tbn0.gstatic.com
+    kind: search
+    text_param: q
+    keep_params:
+      - q
+    similarity: 0.3
+  - name: auto_suggest_17
+    match: GET /shopping
+    host: encrypted-tbn2.gstatic.com
+    kind: search
+    text_param: q
+    keep_params:
+      - q
+    similarity: 0.3
+  - name: auto_suggest_18
+    match: GET /favicon-tbn
+    host: encrypted-tbn2.gstatic.com
     kind: search
     text_param: q
     keep_params:

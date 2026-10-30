@@ -1,0 +1,8 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "zeronaught.com", which takes precedence.
+site: zeronaught.com
+hosts:
+  - zeronaught.com
+  - "*.zeronaught.com"
+drop_params:
+  - c

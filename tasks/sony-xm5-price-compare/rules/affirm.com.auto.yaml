@@ -6,6 +6,7 @@ hosts:
   - "*.affirm.com"
 drop_params:
   - ec
+  - sid
   - t
 body_drop:
   - timestamp

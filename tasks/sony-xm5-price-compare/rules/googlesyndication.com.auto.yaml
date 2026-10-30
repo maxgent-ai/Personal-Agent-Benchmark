@@ -5,7 +5,24 @@ hosts:
   - googlesyndication.com
   - "*.googlesyndication.com"
 drop_params:
+  - adk
+  - co
   - id
   - jk
+  - li
+  - mcvt
+  - met
+  - mtos
+  - p
+  - rc
+  - rpt
+  - rst
+  - sig
+  - tm
+  - tos
+  - tu
+  - type
+  - v
+  - xai
 body_drop:
   - "0"

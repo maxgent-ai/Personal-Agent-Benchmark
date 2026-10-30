@@ -1,0 +1,12 @@
+# Inferred from the recordings of this task; regenerated whenever one is packed or imported. Do not edit:
+# corrections go into a hand-written rules file for site "ebayadservices.com", which takes precedence.
+site: ebayadservices.com
+hosts:
+  - ebayadservices.com
+  - "*.ebayadservices.com"
+drop_params:
+  - data_provider
+  - enc_guid_uid
+  - tpid
+block:
+  - www.ebayadservices.com
